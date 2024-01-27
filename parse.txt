@@ -1,0 +1,1693 @@
+File: ./src/components/Pagination.tsx
+import { generatePagination } from "../lib/pagination";
+import Link from "next/link";
+
+type Props = {
+  current: number;
+  pages: number;
+  link: {
+    href: (page: number) => string;
+    as: (page: number) => string;
+  };
+};
+export default function Pagination({ current, pages, link }: Props) {
+  const pagination = generatePagination(current, pages);
+  return (
+    <ul>
+      {pagination.map((it, i) => (
+        <li key={i}>
+          {it.excerpt ? (
+            "..."
+          ) : (
+            <Link href={link.href(it.page)} as={link.as(it.page)}>
+              <span className={it.page === current ? "active" : null}>
+                {it.page}
+              </span>
+            </Link>
+          )}
+        </li>
+      ))}
+      <style jsx>{`
+        ul {
+          list-style: none;
+          margin: 3rem 0 0 0;
+          padding: 0;
+        }
+        li {
+          display: inline-block;
+          margin-right: 1em;
+          color: #9b9b9b;
+          font-size: 1.25rem;
+        }
+        a.active {
+          color: #222;
+          font-weight: bold;
+        }
+      `}</style>
+    </ul>
+  );
+}
+
+
+File: ./src/components/TagLink.tsx
+import Link from "next/link";
+import { TagContent } from "../lib/tags";
+
+type Props = {
+  tag: TagContent;
+};
+export default function Tag({ tag }: Props) {
+  return (
+    <Link href={"/posts/tags/[[...slug]]"} as={`/posts/tags/${tag.slug}`}>
+      {"#" + tag.name}
+    </Link>
+  );
+}
+
+
+File: ./src/components/TagButton.tsx
+import Link from "next/link";
+import { TagContent } from "../lib/tags";
+
+type Props = {
+  tag: TagContent;
+};
+export default function TagButton({ tag }: Props) {
+  return (
+    <>
+      <Link href={"/posts/tags/[[...slug]]"} as={`/posts/tags/${tag.slug}`}>
+        {tag.name}
+      </Link>
+      <style jsx>{`
+        a {
+          display: inline-block;
+          border-radius: 3px;
+          background-color: rgba(21, 132, 125, 0.2);
+          color: #15847d;
+          transition: background-color 0.3s ease;
+          padding: 0.25em 0.5em;
+        }
+        a:active,
+        a:hover {
+          background-color: rgba(21, 132, 125, 0.4);
+        }
+      `}</style>
+    </>
+  );
+}
+
+
+File: ./src/components/Copyright.tsx
+export default function Copyright() {
+  return (
+    <>
+      <p>&copy; 2020</p>
+      <style jsx>
+        {`
+          p {
+            font-size: 0.75rem;
+            text-align: center;
+          }
+        `}
+      </style>
+    </>
+  );
+}
+
+
+File: ./src/components/meta/BasicMeta.tsx
+import Head from "next/head";
+import config from "../../lib/config";
+
+type Props = {
+  title?: string;
+  description?: string;
+  keywords?: string[];
+  author?: string;
+  url: string;
+};
+export default function BasicMeta({
+  title,
+  description,
+  keywords,
+  author,
+  url,
+}: Props) {
+  return (
+    <Head>
+      <title>
+        {title ? [title, config.site_title].join(" | ") : config.site_title}
+      </title>
+      <meta
+        name="description"
+        content={description ? description : config.site_description}
+      />
+      <meta
+        name="keywords"
+        content={
+          keywords
+            ? keywords.join(",")
+            : config.site_keywords.map((it) => it.keyword).join(",")
+        }
+      />
+      {author ? <meta name="author" content={author} /> : null}
+      <link rel="canonical" href={config.base_url + url} />
+    </Head>
+  );
+}
+
+
+File: ./src/components/meta/JsonLdMeta.tsx
+import { BlogPosting } from "schema-dts";
+import { jsonLdScriptProps } from "react-schemaorg";
+import config from "../../lib/config";
+import { formatISO } from "date-fns";
+import Head from "next/head";
+
+type Props = {
+  url: string;
+  title: string;
+  keywords?: string[];
+  date: Date;
+  author?: string;
+  image?: string;
+  description?: string;
+};
+export default function JsonLdMeta({
+  url,
+  title,
+  keywords,
+  date,
+  author,
+  image,
+  description,
+}: Props) {
+  return (
+    <Head>
+      <script
+        {...jsonLdScriptProps<BlogPosting>({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          mainEntityOfPage: config.base_url + url,
+          headline: title,
+          keywords: keywords ? undefined : keywords.join(","),
+          datePublished: formatISO(date),
+          author: author,
+          image: image,
+          description: description,
+        })}
+      />
+    </Head>
+  );
+}
+
+
+File: ./src/components/meta/TwitterCardMeta.tsx
+import config from "../../lib/config";
+import Head from "next/head";
+
+type Props = {
+  url: string;
+  title?: string;
+  description?: string;
+};
+export default function TwitterCardMeta({ url, title, description }: Props) {
+  return (
+    <Head>
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:site" content={config.twitter_account} />
+      <meta property="twitter:url" content={config.base_url + url} />
+      <meta
+        property="twitter:title"
+        content={title ? [title, config.site_title].join(" | ") : ""}
+      />
+      <meta
+        property="twitter:description"
+        content={description ? description : config.site_description}
+      />
+    </Head>
+  );
+}
+
+
+File: ./src/components/meta/OpenGraphMeta.tsx
+import Head from "next/head";
+import config from "../../lib/config";
+
+type Props = {
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+};
+export default function OpenGraphMeta({
+  url,
+  title,
+  description,
+  image,
+}: Props) {
+  return (
+    <Head>
+      <meta property="og:site_name" content={config.site_title} />
+      <meta property="og:url" content={config.base_url + url} />
+      <meta
+        property="og:title"
+        content={title ? [title, config.site_title].join(" | ") : ""}
+      />
+      <meta
+        property="og:description"
+        content={description ? description : config.site_description}
+      />
+      <meta
+        property="og:image"
+        content={image ? image : config.base_url + "/og_image.png"}
+      />
+      <meta property="og:type" content="article" />
+    </Head>
+  );
+}
+
+
+File: ./src/components/PostList.tsx
+import React from "react";
+import { PostContent } from "../lib/posts";
+import PostItem from "./PostItem";
+import TagLink from "./TagLink";
+import Pagination from "./Pagination";
+import { TagContent } from "../lib/tags";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function PostList({ posts, tags, pagination }: Props) {
+  return (
+    <div className={"container"}>
+      <div className={"posts"}>
+        <ul className={"post-list"}>
+          {posts.map((it, i) => (
+            <li key={i}>
+              <PostItem post={it} />
+            </li>
+          ))}
+        </ul>
+        <Pagination
+          current={pagination.current}
+          pages={pagination.pages}
+          link={{
+            href: (page) => (page === 1 ? "/posts" : "/posts/page/[page]"),
+            as: (page) => (page === 1 ? null : "/posts/page/" + page),
+          }}
+        />
+      </div>
+      <ul className={"categories"}>
+        {tags.map((it, i) => (
+          <li key={i}>
+            <TagLink tag={it} />
+          </li>
+        ))}
+      </ul>
+      <style jsx>{`
+        .container {
+          display: flex;
+          margin: 0 auto;
+          max-width: 1200px;
+          width: 100%;
+          padding: 0 1.5rem;
+        }
+        ul {
+          margin: 0;
+          padding: 0;
+        }
+        li {
+          list-style: none;
+        }
+        .posts {
+          display: flex;
+          flex-direction: column;
+          flex: 1 1 auto;
+        }
+        .posts li {
+          margin-bottom: 1.5rem;
+        }
+        .post-list {
+          flex: 1 0 auto;
+        }
+        .categories {
+          display: none;
+        }
+        .categories li {
+          margin-bottom: 0.75em;
+        }
+
+        @media (min-width: 769px) {
+          .categories {
+            display: block;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
+File: ./src/components/PostLayout.tsx
+import React from "react";
+import styles from "../../public/styles/content.module.css";
+import Author from "./Author";
+import Copyright from "./Copyright";
+import Date from "./Date";
+import Layout from "./Layout";
+import BasicMeta from "./meta/BasicMeta";
+import JsonLdMeta from "./meta/JsonLdMeta";
+import OpenGraphMeta from "./meta/OpenGraphMeta";
+import TwitterCardMeta from "./meta/TwitterCardMeta";
+import { SocialList } from "./SocialList";
+import TagButton from "./TagButton";
+import { getAuthor } from "../lib/authors";
+import { getTag } from "../lib/tags";
+
+type Props = {
+  title: string;
+  date: Date;
+  slug: string;
+  tags: string[];
+  author: string;
+  description?: string;
+  children: React.ReactNode;
+};
+export default function PostLayout({
+  title,
+  date,
+  slug,
+  author,
+  tags,
+  description = "",
+  children,
+}: Props) {
+  const keywords = tags.map(it => getTag(it).name);
+  const authorName = getAuthor(author).name;
+  return (
+    <Layout>
+      <BasicMeta
+        url={`/posts/${slug}`}
+        title={title}
+        keywords={keywords}
+        description={description}
+      />
+      <TwitterCardMeta
+        url={`/posts/${slug}`}
+        title={title}
+        description={description}
+      />
+      <OpenGraphMeta
+        url={`/posts/${slug}`}
+        title={title}
+        description={description}
+      />
+      <JsonLdMeta
+        url={`/posts/${slug}`}
+        title={title}
+        keywords={keywords}
+        date={date}
+        author={authorName}
+        description={description}
+      />
+      <div className={"container"}>
+        <article>
+          <header>
+            <h1>{title}</h1>
+            <div className={"metadata"}>
+              <div>
+                <Date date={date} />
+              </div>
+              <div>
+                <Author author={getAuthor(author)} />
+              </div>
+            </div>
+          </header>
+          <div className={styles.content}>{children}</div>
+          <ul className={"tag-list"}>
+            {tags.map((it, i) => (
+              <li key={i}>
+                <TagButton tag={getTag(it)} />
+              </li>
+            ))}
+          </ul>
+        </article>
+        <footer>
+          <div className={"social-list"}>
+            <SocialList />
+          </div>
+          <Copyright />
+        </footer>
+      </div>
+      <style jsx>
+        {`
+            .container {
+              display: block;
+              max-width: 36rem;
+              width: 100%;
+              margin: 0 auto;
+              padding: 0 1.5rem;
+              box-sizing: border-box;
+              z-index: 0;
+            }
+            .metadata div {
+              display: inline-block;
+              margin-right: 0.5rem;
+            }
+            article {
+              flex: 1 0 auto;
+            }
+            h1 {
+              margin: 0 0 0.5rem;
+              font-size: 2.25rem;
+            }
+            .tag-list {
+              list-style: none;
+              text-align: right;
+              margin: 1.75rem 0 0 0;
+              padding: 0;
+            }
+            .tag-list li {
+              display: inline-block;
+              margin-left: 0.5rem;
+            }
+            .social-list {
+              margin-top: 3rem;
+              text-align: center;
+            }
+
+            @media (min-width: 769px) {
+              .container {
+                display: flex;
+                flex-direction: column;
+              }
+            }
+          `}
+      </style>
+      <style global jsx>
+        {`
+            /* Syntax highlighting */
+            .token.comment,
+            .token.prolog,
+            .token.doctype,
+            .token.cdata,
+            .token.plain-text {
+              color: #6a737d;
+            }
+
+            .token.atrule,
+            .token.attr-value,
+            .token.keyword,
+            .token.operator {
+              color: #d73a49;
+            }
+
+            .token.property,
+            .token.tag,
+            .token.boolean,
+            .token.number,
+            .token.constant,
+            .token.symbol,
+            .token.deleted {
+              color: #22863a;
+            }
+
+            .token.selector,
+            .token.attr-name,
+            .token.string,
+            .token.char,
+            .token.builtin,
+            .token.inserted {
+              color: #032f62;
+            }
+
+            .token.function,
+            .token.class-name {
+              color: #6f42c1;
+            }
+
+            /* language-specific */
+
+            /* JSX */
+            .language-jsx .token.punctuation,
+            .language-jsx .token.tag .token.punctuation,
+            .language-jsx .token.tag .token.script,
+            .language-jsx .token.plain-text {
+              color: #24292e;
+            }
+
+            .language-jsx .token.tag .token.attr-name {
+              color: #6f42c1;
+            }
+
+            .language-jsx .token.tag .token.class-name {
+              color: #005cc5;
+            }
+
+            .language-jsx .token.tag .token.script-punctuation,
+            .language-jsx .token.attr-value .token.punctuation:first-child {
+              color: #d73a49;
+            }
+
+            .language-jsx .token.attr-value {
+              color: #032f62;
+            }
+
+            .language-jsx span[class="comment"] {
+              color: pink;
+            }
+
+            /* HTML */
+            .language-html .token.tag .token.punctuation {
+              color: #24292e;
+            }
+
+            .language-html .token.tag .token.attr-name {
+              color: #6f42c1;
+            }
+
+            .language-html .token.tag .token.attr-value,
+            .language-html
+              .token.tag
+              .token.attr-value
+              .token.punctuation:not(:first-child) {
+              color: #032f62;
+            }
+
+            /* CSS */
+            .language-css .token.selector {
+              color: #6f42c1;
+            }
+
+            .language-css .token.property {
+              color: #005cc5;
+            }
+          `}
+      </style>
+    </Layout>
+  );
+}
+
+
+File: ./src/components/Layout.tsx
+import Head from "next/head";
+import Navigation from "./Navigation";
+
+type Props = {
+  children: React.ReactNode;
+};
+export default function Layout({ children }: Props) {
+  return (
+    <div className="root">
+      <Head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <meta name="theme-color" content="#fff" />
+      </Head>
+      <nav>
+        <Navigation />
+      </nav>
+      <main>{children}</main>
+      <style jsx>
+        {`
+          .root {
+            display: block;
+            padding: 4rem 0;
+            box-sizing: border-box;
+            height: 100%;
+          }
+          main {
+            display: flex;
+            min-height: 100%;
+          }
+          @media (min-width: 769px) {
+            .root {
+              display: flex;
+              flex: 1 0 auto;
+            }
+            main {
+              flex: 1 0 auto;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+
+File: ./src/components/PostItem.tsx
+import { PostContent } from "../lib/posts";
+import Date from "./Date";
+import Link from "next/link";
+import { parseISO } from "date-fns";
+
+type Props = {
+  post: PostContent;
+};
+export default function PostItem({ post }: Props) {
+  return (
+    <Link href={"/posts/" + post.slug}>
+      <span>
+        <Date date={parseISO(post.date)} />
+        <h2>{post.title}</h2>
+        <style jsx>
+          {`
+            a {
+              color: #222;
+              display: inline-block;
+            }
+            h2 {
+              margin: 0;
+              font-weight: 500;
+            }
+          `}
+        </style>
+      </span>
+    </Link>
+  );
+}
+
+
+File: ./src/components/Date.tsx
+import { format, formatISO } from "date-fns";
+
+type Props = {
+  date: Date;
+};
+export default function Date({ date }: Props) {
+  return (
+    <time dateTime={formatISO(date)}>
+      <span>{format(date, "LLLL d, yyyy")}</span>
+      <style jsx>
+        {`
+          span {
+            color: #9b9b9b;
+          }
+        `}
+      </style>
+    </time>
+  );
+}
+
+
+File: ./src/components/Author.tsx
+import { AuthorContent } from "../lib/authors";
+
+type Props = {
+  author: AuthorContent;
+};
+export default function Author({ author }: Props) {
+  return (
+    <>
+      <span>{author.name}</span>
+      <style jsx>
+        {`
+          span {
+            color: #9b9b9b;
+          }
+        `}
+      </style>
+    </>
+  );
+}
+
+
+File: ./src/components/Burger.tsx
+type Props = {
+  active: boolean;
+  onClick: () => void;
+};
+export default function Burger({ active, onClick }: Props) {
+  return (
+    <div className={"container " + (active ? "active" : "")} onClick={onClick}>
+      <div className={"meat meat-1"} />
+      <div className={"meat meat-2"} />
+      <div className={"meat meat-3"} />
+      <style jsx>
+        {`
+          .container {
+            position: fixed;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            top: 1rem;
+            left: 1.25rem;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.7);
+          }
+          .meat {
+            position: absolute;
+            width: 28px;
+            height: 2px;
+            background: #222;
+            top: calc(50% - 2px / 2);
+            left: calc(50% - 28px / 2);
+            transition: all 150ms ease-in;
+          }
+          .meat-1 {
+            transform: translateY(-10px);
+          }
+          .meat-2 {
+            width: calc(28px - 6px);
+          }
+          .meat-3 {
+            transform: translateY(10px);
+          }
+          .active .meat-1 {
+            transform: rotate(45deg);
+          }
+          .active .meat-2 {
+            opacity: 0;
+          }
+          .active .meat-3 {
+            transform: rotate(-45deg);
+          }
+
+          @media (min-width: 769px) {
+            .container {
+              display: none;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+
+File: ./src/components/Navigation.tsx
+import Link from "next/link";
+import { useRouter } from "next/router";
+import Burger from "./Burger";
+import { useState } from "react";
+
+export default function Navigation() {
+  const router = useRouter();
+  const [active, setActive] = useState(false);
+  return (
+    <>
+      <Burger active={active} onClick={() => setActive(!active)} />
+      <div className={"container " + (active ? "active" : "")}>
+        <ul>
+          <li>
+            <Link href="/">
+              <span className={router.pathname === "/" ? "active" : null}>
+                about
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/posts">
+              <span
+                className={
+                  router.pathname.startsWith("/posts") ? "active" : null
+                }
+              >
+                blog
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/projects">
+              <span
+                className={
+                  router.pathname.startsWith("/projects") ? "active" : null
+                }
+              >
+                projects
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/resume">
+              <span
+                className={
+                  router.pathname.startsWith("/resume") ? "active" : null
+                }
+              >
+                resume
+              </span>
+            </Link>
+          </li>
+        </ul>
+        <style jsx>
+          {`
+            .container {
+              width: 0;
+            }
+            ul {
+              opacity: 0;
+              width: 100%;
+              height: 100vh;
+              text-align: right;
+              list-style: none;
+              margin: 0;
+              padding: 0;
+              position: fixed;
+              top: 0;
+              background-color: #fff;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              z-index: 1;
+              transform: translateY(100%);
+              transition: opacity 200ms;
+            }
+            .active ul {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            li {
+              margin-bottom: 1.75rem;
+              font-size: 2rem;
+              padding: 0 1.5rem 0 0;
+            }
+            li:last-child {
+              margin-bottom: 0;
+            }
+            .active {
+              color: #222;
+            }
+
+            @media (min-width: 769px) {
+              .container {
+                width: 7rem;
+                display: block;
+              }
+              ul {
+                opacity: 1;
+                width: 7rem;
+                top: auto;
+                display: block;
+                transform: translateY(0);
+              }
+              li {
+                font-size: 1rem;
+                padding: 0;
+              }
+            }
+          `}
+        </style>
+      </div>
+    </>
+  );
+}
+
+
+File: ./src/components/TagPostList.tsx
+import React from "react";
+import { PostContent } from "../lib/posts";
+import { TagContent } from "../lib/tags";
+import PostItem from "./PostItem";
+import Pagination from "./Pagination";
+
+type Props = {
+  posts: PostContent[];
+  tag: TagContent;
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function TagPostList({ posts, tag, pagination }: Props) {
+  return (
+    <div className={"container"}>
+      <h1>
+        All posts / <span>{tag.name}</span>
+      </h1>
+      <ul>
+        {posts.map((it, i) => (
+          <li key={i}>
+            <PostItem post={it} />
+          </li>
+        ))}
+      </ul>
+      <Pagination
+        current={pagination.current}
+        pages={pagination.pages}
+        link={{
+          href: () => "/posts/tags/[[...slug]]",
+          as: (page) =>
+            page === 1
+              ? "/posts/tags/" + tag.slug
+              : `/posts/tags/${tag.slug}/${page}`,
+        }}
+      />
+      <style jsx>
+        {`
+          .container {
+            margin: 0 auto;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+          }
+          h1 {
+            margin: 0 0 2rem;
+            padding: 0;
+            font-weight: 100;
+            font-size: 1.75rem;
+            color: #9b9b9b;
+          }
+          h1 span {
+            font-weight: bold;
+            color: #222;
+          }
+          ul {
+            margin: 0;
+            padding: 0;
+            flex: 1 0 auto;
+          }
+          li {
+            list-style: none;
+            margin-bottom: 1.5rem;
+          }
+
+          @media (min-width: 769px) {
+            h1 {
+              font-size: 2rem;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+
+File: ./src/components/SocialList.tsx
+import React from "react";
+import Twitter from "../assets/twitter-alt.svg";
+import GitHub from "../assets/github-alt.svg";
+import config from "../lib/config";
+
+export function SocialList({}) {
+  return (
+    <div>
+      <a
+        title="Twitter"
+        href={`https://twitter.com/${config.twitter_account}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <Twitter width={24} height={24} fill={"#222"} />
+      </a>
+      <a
+        title="GitHub"
+        href={`https://github.com/${config.github_account}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <GitHub width={24} height={24} fill={"#222"} />
+      </a>
+      <style jsx>{`
+        a {
+          display: inline-block;
+        }
+        a:not(:last-child) {
+          margin-right: 2em;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
+File: ./src/pages/index.tsx
+import Layout from "../components/Layout";
+import BasicMeta from "../components/meta/BasicMeta";
+import OpenGraphMeta from "../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../components/meta/TwitterCardMeta";
+import { SocialList } from "../components/SocialList";
+
+export default function Index() {
+  return (
+    <Layout>
+      <BasicMeta url={"/"} />
+      <OpenGraphMeta url={"/"} />
+      <TwitterCardMeta url={"/"} />
+      <div className="container">
+        <div>
+          <h1>
+            Hi, I'm Deon<span className="fancy">.</span>
+          </h1>
+          <span className="handle">@nifti</span>
+          <h2>A haven for my entropic ideas.</h2>
+          <SocialList />
+        </div>
+      </div>
+      <style jsx>{`
+        .container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 1 1 auto;
+          padding: 0 1.5rem;
+        }
+        h1 {
+          font-size: 2.5rem;
+          margin: 0;
+          font-weight: 500;
+        }
+        h2 {
+          font-size: 1.75rem;
+          font-weight: 400;
+          line-height: 1.25;
+        }
+        .fancy {
+          color: #15847d;
+        }
+        .handle {
+          display: inline-block;
+          margin-top: 0.275em;
+          color: #9b9b9b;
+          letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 769px) {
+          h1 {
+            font-size: 3rem;
+          }
+          h2 {
+            font-size: 2.25rem;
+          }
+        }
+      `}</style>
+    </Layout>
+  );
+}
+
+
+File: ./src/pages/posts/index.tsx
+import { GetStaticProps } from "next";
+import Layout from "../../components/Layout";
+import BasicMeta from "../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../components/meta/TwitterCardMeta";
+import PostList from "../../components/PostList";
+import config from "../../lib/config";
+import { countPosts, listPostContent, PostContent } from "../../lib/posts";
+import { listTags, TagContent } from "../../lib/tags";
+import Head from "next/head";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tags, pagination }: Props) {
+  const url = "/posts";
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <PostList posts={posts} tags={tags} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const posts = listPostContent(1, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: 1,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
+
+
+File: ./src/pages/posts/page/[page].tsx
+import { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
+import Layout from "../../../components/Layout";
+import BasicMeta from "../../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
+import PostList from "../../../components/PostList";
+import config from "../../../lib/config";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
+import { listTags, TagContent } from "../../../lib/tags";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  page: number;
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Page({ posts, tags, pagination, page }: Props) {
+  const url = `/posts/page/${page}`;
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <PostList posts={posts} tags={tags} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const page = parseInt(params.page as string);
+  const posts = listPostContent(page, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: page,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      page,
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const pages = Math.ceil(countPosts() / config.posts_per_page);
+  const paths = Array.from(Array(pages - 1).keys()).map((it) => ({
+    params: { page: (it + 2).toString() },
+  }));
+  return {
+    paths: paths,
+    fallback: false,
+  };
+};
+
+
+File: ./src/pages/posts/[post].tsx
+import { GetStaticProps, GetStaticPaths } from "next";
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+import matter from "gray-matter";
+import { fetchPostContent } from "../../lib/posts";
+import fs from "fs";
+import yaml from "js-yaml";
+import { parseISO } from "date-fns";
+import PostLayout from "../../components/PostLayout";
+
+import InstagramEmbed from "react-instagram-embed";
+import YouTube from "react-youtube";
+import { TwitterTweetEmbed } from "react-twitter-embed";
+
+export type Props = {
+  title: string;
+  dateString: string;
+  slug: string;
+  tags: string[];
+  author: string;
+  description?: string;
+  source: any;
+};
+
+const components = { InstagramEmbed, YouTube, TwitterTweetEmbed };
+const slugToPostContent = ((postContents) => {
+  let hash = {};
+  postContents.forEach((it) => (hash[it.slug] = it));
+  return hash;
+})(fetchPostContent());
+
+export default function Post({
+  title,
+  dateString,
+  slug,
+  tags,
+  author,
+  description = "",
+  source,
+}: Props) {
+  return (
+    <PostLayout
+      title={title}
+      date={parseISO(dateString)}
+      slug={slug}
+      tags={tags}
+      author={author}
+      description={description}
+    >
+      <MDXRemote {...source} components={components} />
+    </PostLayout>
+  );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = fetchPostContent().map((it) => "/posts/" + it.slug);
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const slug = params.post as string;
+  const source = fs.readFileSync(slugToPostContent[slug].fullPath, "utf8");
+  const { content, data } = matter(source, {
+    engines: {
+      yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
+    },
+  });
+  const mdxSource = await serialize(content, { scope: data });
+  return {
+    props: {
+      title: data.title,
+      dateString: data.date,
+      slug: data.slug,
+      description: "",
+      tags: data.tags,
+      author: data.author,
+      source: mdxSource,
+    },
+  };
+};
+
+
+File: ./src/pages/posts/tags/[[...slug]].tsx
+import { GetStaticPaths, GetStaticProps } from "next";
+import Layout from "../../../components/Layout";
+import BasicMeta from "../../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
+import TagPostList from "../../../components/TagPostList";
+import config from "../../../lib/config";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
+import { getTag, listTags, TagContent } from "../../../lib/tags";
+import Head from "next/head";
+
+type Props = {
+  posts: PostContent[];
+  tag: TagContent;
+  page?: string;
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tag, pagination, page }: Props) {
+  const url = `/posts/tags/${tag.name}` + (page ? `/${page}` : "");
+  const title = tag.name;
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <TagPostList posts={posts} tag={tag} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const queries = params.slug as string[];
+  const [slug, page] = [queries[0], queries[1]];
+  const posts = listPostContent(
+    page ? parseInt(page as string) : 1,
+    config.posts_per_page,
+    slug
+  );
+  const tag = getTag(slug);
+  const pagination = {
+    current: page ? parseInt(page as string) : 1,
+    pages: Math.ceil(countPosts(slug) / config.posts_per_page),
+  };
+  const props: {
+    posts: PostContent[];
+    tag: TagContent;
+    pagination: { current: number; pages: number };
+    page?: string;
+  } = { posts, tag, pagination };
+  if (page) {
+    props.page = page;
+  }
+  return {
+    props,
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = listTags().flatMap((tag) => {
+    const pages = Math.ceil(countPosts(tag.slug) / config.posts_per_page);
+    return Array.from(Array(pages).keys()).map((page) =>
+      page === 0
+        ? {
+            params: { slug: [tag.slug] },
+          }
+        : {
+            params: { slug: [tag.slug, (page + 1).toString()] },
+          }
+    );
+  });
+  return {
+    paths: paths,
+    fallback: false,
+  };
+};
+
+
+File: ./src/pages/projects/index.tsx
+import Layout from "../../components/Layout";
+import BasicMeta from "../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../components/meta/TwitterCardMeta";
+
+export default function Index() {
+  const url = "/resume";
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <div>HREEDHDD</div>
+    </Layout>
+  );
+}
+
+
+File: ./src/pages/projects/page/[page].tsx
+import { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
+import Layout from "../../../components/Layout";
+import BasicMeta from "../../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
+import PostList from "../../../components/PostList";
+import config from "../../../lib/config";
+import {
+  countPosts,
+  listPostContent,
+  PostContent,
+} from "../../../lib/projects";
+import { listTags, TagContent } from "../../../lib/tags";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  page: number;
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Page({ posts, tags, pagination, page }: Props) {
+  const url = `/projects/page/${page}`;
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <PostList posts={posts} tags={tags} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const page = parseInt(params.page as string);
+  const posts = listPostContent(page, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: page,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      page,
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const pages = Math.ceil(countPosts() / config.posts_per_page);
+  const paths = Array.from(Array(pages - 1).keys()).map((it) => ({
+    params: { page: (it + 2).toString() },
+  }));
+  return {
+    paths: paths,
+    fallback: false,
+  };
+};
+
+
+File: ./src/pages/projects/tags/[[...slug]].tsx
+import { GetStaticPaths, GetStaticProps } from "next";
+import Layout from "../../../components/Layout";
+import BasicMeta from "../../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
+import TagPostList from "../../../components/TagPostList";
+import config from "../../../lib/config";
+import {
+  countPosts,
+  listPostContent,
+  PostContent,
+} from "../../../lib/projects";
+import { getTag, listTags, TagContent } from "../../../lib/tags";
+import Head from "next/head";
+
+type Props = {
+  posts: PostContent[];
+  tag: TagContent;
+  page?: string;
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tag, pagination, page }: Props) {
+  const url = `/posts/tags/${tag.name}` + (page ? `/${page}` : "");
+  const title = tag.name;
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <TagPostList posts={posts} tag={tag} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const queries = params.slug as string[];
+  const [slug, page] = [queries[0], queries[1]];
+  const posts = listPostContent(
+    page ? parseInt(page as string) : 1,
+    config.posts_per_page,
+    slug
+  );
+  const tag = getTag(slug);
+  const pagination = {
+    current: page ? parseInt(page as string) : 1,
+    pages: Math.ceil(countPosts(slug) / config.posts_per_page),
+  };
+  const props: {
+    posts: PostContent[];
+    tag: TagContent;
+    pagination: { current: number; pages: number };
+    page?: string;
+  } = { posts, tag, pagination };
+  if (page) {
+    props.page = page;
+  }
+  return {
+    props,
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = listTags().flatMap((tag) => {
+    const pages = Math.ceil(countPosts(tag.slug) / config.posts_per_page);
+    return Array.from(Array(pages).keys()).map((page) =>
+      page === 0
+        ? {
+            params: { slug: [tag.slug] },
+          }
+        : {
+            params: { slug: [tag.slug, (page + 1).toString()] },
+          }
+    );
+  });
+  return {
+    paths: paths,
+    fallback: false,
+  };
+};
+
+
+File: ./src/pages/projects/[projects].tsx
+import { GetStaticProps, GetStaticPaths } from "next";
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+import matter from "gray-matter";
+import { fetchPostContent } from "../../lib/projects";
+import fs from "fs";
+import yaml from "js-yaml";
+import { parseISO } from "date-fns";
+import PostLayout from "../../components/PostLayout";
+
+import InstagramEmbed from "react-instagram-embed";
+import YouTube from "react-youtube";
+import { TwitterTweetEmbed } from "react-twitter-embed";
+
+export type Props = {
+  title: string;
+  dateString: string;
+  slug: string;
+  tags: string[];
+  author: string;
+  description?: string;
+  source: any;
+};
+
+const components = { InstagramEmbed, YouTube, TwitterTweetEmbed };
+const slugToPostContent = ((postContents) => {
+  let hash = {};
+  postContents.forEach((it) => (hash[it.slug] = it));
+  return hash;
+})(fetchPostContent());
+
+export default function Post({
+  title,
+  dateString,
+  slug,
+  tags,
+  author,
+  description = "",
+  source,
+}: Props) {
+  return (
+    <PostLayout
+      title={title}
+      date={parseISO(dateString)}
+      slug={slug}
+      tags={tags}
+      author={author}
+      description={description}
+    >
+      <MDXRemote {...source} components={components} />
+    </PostLayout>
+  );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = fetchPostContent().map((it) => "/projects/" + it.slug);
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const slug = params.post as string;
+  const source = fs.readFileSync(slugToPostContent[slug].fullPath, "utf8");
+  const { content, data } = matter(source, {
+    engines: {
+      yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
+    },
+  });
+  const mdxSource = await serialize(content, { scope: data });
+  return {
+    props: {
+      title: data.title,
+      dateString: data.date,
+      slug: data.slug,
+      description: "",
+      tags: data.tags,
+      author: data.author,
+      source: mdxSource,
+    },
+  };
+};
+
+
+File: ./src/pages/resume/index.tsx
+import { GetStaticProps } from "next";
+import Layout from "../../components/Layout";
+import BasicMeta from "../../components/meta/BasicMeta";
+import OpenGraphMeta from "../../components/meta/OpenGraphMeta";
+import TwitterCardMeta from "../../components/meta/TwitterCardMeta";
+import PostList from "../../components/PostList";
+import config from "../../lib/config";
+import { countPosts, listPostContent, PostContent } from "../../lib/projects";
+import { listTags, TagContent } from "../../lib/tags";
+import Head from "next/head";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tags, pagination }: Props) {
+  const url = "/projects";
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <PostList posts={posts} tags={tags} pagination={pagination} />
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const posts = listPostContent(1, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: 1,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
+
+
+File: ./src/pages/_app.tsx
+import "normalize.css";
+import { AppProps } from "next/app";
+// NOTE: Do not move the styles dir to the src.
+// They are used by the Netlify CMS preview feature.
+import "../../public/styles/global.css";
+
+export default function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />;
+}
+
+
