@@ -19,17 +19,6 @@ export default function Navigation() {
             </Link>
           </li>
           <li>
-            <Link href="/posts">
-              <span
-                className={
-                  router.pathname.startsWith("/posts") ? "active" : null
-                }
-              >
-                blog
-              </span>
-            </Link>
-          </li>
-          <li>
             <Link href="/projects">
               <span
                 className={
@@ -48,6 +37,17 @@ export default function Navigation() {
                 }
               >
                 resume
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/posts">
+              <span
+                className={
+                  router.pathname.startsWith("/posts") ? "active" : null
+                }
+              >
+                blog
               </span>
             </Link>
           </li>

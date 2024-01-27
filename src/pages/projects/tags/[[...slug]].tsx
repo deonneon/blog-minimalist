@@ -5,11 +5,7 @@ import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
 import TagPostList from "../../../components/TagPostList";
 import config from "../../../lib/config";
-import {
-  countPosts,
-  listPostContent,
-  PostContent,
-} from "../../../lib/projects";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
 import { getTag, listTags, TagContent } from "../../../lib/tags";
 import Head from "next/head";
 

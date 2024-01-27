@@ -2,7 +2,7 @@ import { GetStaticProps, GetStaticPaths } from "next";
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import matter from "gray-matter";
-import { fetchPostContent } from "../../lib/projects";
+import { fetchPostContent } from "../../lib/posts";
 import fs from "fs";
 import yaml from "js-yaml";
 import { parseISO } from "date-fns";
@@ -51,7 +51,7 @@ export default function Post({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = fetchPostContent().map((it) => "/projects/" + it.slug);
+  const paths = fetchPostContent().map((it) => "/posts/" + it.slug);
   return {
     paths,
     fallback: false,

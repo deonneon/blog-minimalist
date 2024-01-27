@@ -6,11 +6,7 @@ import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
 import PostList from "../../../components/PostList";
 import config from "../../../lib/config";
-import {
-  countPosts,
-  listPostContent,
-  PostContent,
-} from "../../../lib/projects";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
 import { listTags, TagContent } from "../../../lib/tags";
 
 type Props = {
@@ -23,7 +19,7 @@ type Props = {
   };
 };
 export default function Page({ posts, tags, pagination, page }: Props) {
-  const url = `/projects/page/${page}`;
+  const url = `/posts/page/${page}`;
   const title = "All posts";
   return (
     <Layout>
