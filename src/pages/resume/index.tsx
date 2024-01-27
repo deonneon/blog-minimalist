@@ -12,20 +12,38 @@ export default function Index() {
       <TwitterCardMeta url={"/"} />
       <div className="container">
         <div>
-          <h1>
-            Resume<span className="fancy"></span>
-          </h1>
-          <h2>A haven for my entropic ideas.</h2>
+          <div className="iframe-container">
+            <iframe
+              src="https://dynamic-cv-web.vercel.app/"
+              title="Resume"
+              allowFullScreen
+            ></iframe>
+          </div>
           <SocialList />
         </div>
       </div>
       <style jsx>{`
         .container {
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           flex: 1 1 auto;
           padding: 0 1.5rem;
+        }
+        .iframe-container {
+          overflow: hidden;
+          position: relative;
+          width: 100vw;
+          height: 100vh;
+        }
+        .iframe-container iframe {
+          border: 0;
+          height: 100%;
+          left: 0;
+          position: absolute;
+          top: 0;
+          width: 100%;
         }
         h1 {
           font-size: 2.5rem;
