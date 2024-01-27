@@ -807,17 +807,6 @@ export default function Navigation() {
             </Link>
           </li>
           <li>
-            <Link href="/posts">
-              <span
-                className={
-                  router.pathname.startsWith("/posts") ? "active" : null
-                }
-              >
-                blog
-              </span>
-            </Link>
-          </li>
-          <li>
             <Link href="/projects">
               <span
                 className={
@@ -836,6 +825,17 @@ export default function Navigation() {
                 }
               >
                 resume
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/posts">
+              <span
+                className={
+                  router.pathname.startsWith("/posts") ? "active" : null
+                }
+              >
+                blog
               </span>
             </Link>
           </li>
@@ -1214,9 +1214,7 @@ import yaml from "js-yaml";
 import { parseISO } from "date-fns";
 import PostLayout from "../../components/PostLayout";
 
-import InstagramEmbed from "react-instagram-embed";
 import YouTube from "react-youtube";
-import { TwitterTweetEmbed } from "react-twitter-embed";
 
 export type Props = {
   title: string;
@@ -1228,7 +1226,7 @@ export type Props = {
   source: any;
 };
 
-const components = { InstagramEmbed, YouTube, TwitterTweetEmbed };
+const components = { YouTube };
 const slugToPostContent = ((postContents) => {
   let hash = {};
   postContents.forEach((it) => (hash[it.slug] = it));
@@ -1371,23 +1369,53 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 
 File: ./src/pages/projects/index.tsx
+import { GetStaticProps } from "next";
 import Layout from "../../components/Layout";
 import BasicMeta from "../../components/meta/BasicMeta";
 import OpenGraphMeta from "../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../components/meta/TwitterCardMeta";
+import PostList from "../../components/PostList";
+import config from "../../lib/config";
+import { countPosts, listPostContent, PostContent } from "../../lib/posts";
+import { listTags, TagContent } from "../../lib/tags";
+import Head from "next/head";
 
-export default function Index() {
-  const url = "/resume";
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tags, pagination }: Props) {
+  const url = "/posts";
   const title = "All posts";
   return (
     <Layout>
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      <div>HREEDHDD</div>
+      <PostList posts={posts} tags={tags} pagination={pagination} />
     </Layout>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const posts = listPostContent(1, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: 1,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
 
 
 File: ./src/pages/projects/page/[page].tsx
@@ -1399,11 +1427,7 @@ import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
 import PostList from "../../../components/PostList";
 import config from "../../../lib/config";
-import {
-  countPosts,
-  listPostContent,
-  PostContent,
-} from "../../../lib/projects";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
 import { listTags, TagContent } from "../../../lib/tags";
 
 type Props = {
@@ -1416,7 +1440,7 @@ type Props = {
   };
 };
 export default function Page({ posts, tags, pagination, page }: Props) {
-  const url = `/projects/page/${page}`;
+  const url = `/posts/page/${page}`;
   const title = "All posts";
   return (
     <Layout>
@@ -1458,6 +1482,90 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 
+File: ./src/pages/projects/[post].tsx
+import { GetStaticProps, GetStaticPaths } from "next";
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+import matter from "gray-matter";
+import { fetchPostContent } from "../../lib/posts";
+import fs from "fs";
+import yaml from "js-yaml";
+import { parseISO } from "date-fns";
+import PostLayout from "../../components/PostLayout";
+
+import YouTube from "react-youtube";
+
+export type Props = {
+  title: string;
+  dateString: string;
+  slug: string;
+  tags: string[];
+  author: string;
+  description?: string;
+  source: any;
+};
+
+const components = { YouTube };
+const slugToPostContent = ((postContents) => {
+  let hash = {};
+  postContents.forEach((it) => (hash[it.slug] = it));
+  return hash;
+})(fetchPostContent());
+
+export default function Post({
+  title,
+  dateString,
+  slug,
+  tags,
+  author,
+  description = "",
+  source,
+}: Props) {
+  return (
+    <PostLayout
+      title={title}
+      date={parseISO(dateString)}
+      slug={slug}
+      tags={tags}
+      author={author}
+      description={description}
+    >
+      <MDXRemote {...source} components={components} />
+    </PostLayout>
+  );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = fetchPostContent().map((it) => "/posts/" + it.slug);
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const slug = params.post as string;
+  const source = fs.readFileSync(slugToPostContent[slug].fullPath, "utf8");
+  const { content, data } = matter(source, {
+    engines: {
+      yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
+    },
+  });
+  const mdxSource = await serialize(content, { scope: data });
+  return {
+    props: {
+      title: data.title,
+      dateString: data.date,
+      slug: data.slug,
+      description: "",
+      tags: data.tags,
+      author: data.author,
+      source: mdxSource,
+    },
+  };
+};
+
+
 File: ./src/pages/projects/tags/[[...slug]].tsx
 import { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "../../../components/Layout";
@@ -1466,11 +1574,7 @@ import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
 import TagPostList from "../../../components/TagPostList";
 import config from "../../../lib/config";
-import {
-  countPosts,
-  listPostContent,
-  PostContent,
-} from "../../../lib/projects";
+import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
 import { getTag, listTags, TagContent } from "../../../lib/tags";
 import Head from "next/head";
 
@@ -1543,140 +1647,68 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 
-File: ./src/pages/projects/[projects].tsx
-import { GetStaticProps, GetStaticPaths } from "next";
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemote } from "next-mdx-remote";
-import matter from "gray-matter";
-import { fetchPostContent } from "../../lib/projects";
-import fs from "fs";
-import yaml from "js-yaml";
-import { parseISO } from "date-fns";
-import PostLayout from "../../components/PostLayout";
-
-import InstagramEmbed from "react-instagram-embed";
-import YouTube from "react-youtube";
-import { TwitterTweetEmbed } from "react-twitter-embed";
-
-export type Props = {
-  title: string;
-  dateString: string;
-  slug: string;
-  tags: string[];
-  author: string;
-  description?: string;
-  source: any;
-};
-
-const components = { InstagramEmbed, YouTube, TwitterTweetEmbed };
-const slugToPostContent = ((postContents) => {
-  let hash = {};
-  postContents.forEach((it) => (hash[it.slug] = it));
-  return hash;
-})(fetchPostContent());
-
-export default function Post({
-  title,
-  dateString,
-  slug,
-  tags,
-  author,
-  description = "",
-  source,
-}: Props) {
-  return (
-    <PostLayout
-      title={title}
-      date={parseISO(dateString)}
-      slug={slug}
-      tags={tags}
-      author={author}
-      description={description}
-    >
-      <MDXRemote {...source} components={components} />
-    </PostLayout>
-  );
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = fetchPostContent().map((it) => "/projects/" + it.slug);
-  return {
-    paths,
-    fallback: false,
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params.post as string;
-  const source = fs.readFileSync(slugToPostContent[slug].fullPath, "utf8");
-  const { content, data } = matter(source, {
-    engines: {
-      yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
-    },
-  });
-  const mdxSource = await serialize(content, { scope: data });
-  return {
-    props: {
-      title: data.title,
-      dateString: data.date,
-      slug: data.slug,
-      description: "",
-      tags: data.tags,
-      author: data.author,
-      source: mdxSource,
-    },
-  };
-};
-
-
 File: ./src/pages/resume/index.tsx
-import { GetStaticProps } from "next";
 import Layout from "../../components/Layout";
 import BasicMeta from "../../components/meta/BasicMeta";
 import OpenGraphMeta from "../../components/meta/OpenGraphMeta";
 import TwitterCardMeta from "../../components/meta/TwitterCardMeta";
-import PostList from "../../components/PostList";
-import config from "../../lib/config";
-import { countPosts, listPostContent, PostContent } from "../../lib/projects";
-import { listTags, TagContent } from "../../lib/tags";
-import Head from "next/head";
+import { SocialList } from "../../components/SocialList";
 
-type Props = {
-  posts: PostContent[];
-  tags: TagContent[];
-  pagination: {
-    current: number;
-    pages: number;
-  };
-};
-export default function Index({ posts, tags, pagination }: Props) {
-  const url = "/projects";
-  const title = "All posts";
+export default function Index() {
   return (
     <Layout>
-      <BasicMeta url={url} title={title} />
-      <OpenGraphMeta url={url} title={title} />
-      <TwitterCardMeta url={url} title={title} />
-      <PostList posts={posts} tags={tags} pagination={pagination} />
+      <BasicMeta url={"/"} />
+      <OpenGraphMeta url={"/"} />
+      <TwitterCardMeta url={"/"} />
+      <div className="container">
+        <div>
+          <h1>
+            Resume<span className="fancy"></span>
+          </h1>
+          <h2>A haven for my entropic ideas.</h2>
+          <SocialList />
+        </div>
+      </div>
+      <style jsx>{`
+        .container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 1 1 auto;
+          padding: 0 1.5rem;
+        }
+        h1 {
+          font-size: 2.5rem;
+          margin: 0;
+          font-weight: 500;
+        }
+        h2 {
+          font-size: 1.75rem;
+          font-weight: 400;
+          line-height: 1.25;
+        }
+        .fancy {
+          color: #15847d;
+        }
+        .handle {
+          display: inline-block;
+          margin-top: 0.275em;
+          color: #9b9b9b;
+          letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 769px) {
+          h1 {
+            font-size: 3rem;
+          }
+          h2 {
+            font-size: 2.25rem;
+          }
+        }
+      `}</style>
     </Layout>
   );
 }
-
-export const getStaticProps: GetStaticProps = async () => {
-  const posts = listPostContent(1, config.posts_per_page);
-  const tags = listTags();
-  const pagination = {
-    current: 1,
-    pages: Math.ceil(countPosts() / config.posts_per_page),
-  };
-  return {
-    props: {
-      posts,
-      tags,
-      pagination,
-    },
-  };
-};
 
 
 File: ./src/pages/_app.tsx
