@@ -25,7 +25,6 @@ export default function Index({ posts, tags, pagination }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      {/* <PostList posts={posts} tags={tags} pagination={pagination} /> */}
       <div className="iframe-container">
         <iframe
           src="https://dynamic-cv-web.vercel.app/projects"
