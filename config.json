@@ -1,7 +1,7 @@
 {
-  "base_url": "https://deonneon-nextjs-netlify-blog.netlify.app",
-  "site_title": "Deon's Blog",
-  "site_description": "Deon's Blog",
+  "base_url": "https://deonneon.netlify.app",
+  "site_title": "Personal Website",
+  "site_description": "Personal websit of Deon. Here you can find a portfolio of projects, blog, and resume.",
   "site_keywords": [
     {
       "keyword": "Next.js"
