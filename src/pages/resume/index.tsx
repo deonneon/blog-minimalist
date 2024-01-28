@@ -19,7 +19,6 @@ export default function Index() {
               allowFullScreen
             ></iframe>
           </div>
-          <SocialList />
         </div>
       </div>
       <style jsx>{`
@@ -44,6 +43,27 @@ export default function Index() {
           position: absolute;
           top: 0;
           width: 100%;
+        }
+        @media (max-width: 769px) {
+          .container {
+            padding: 0 0;
+            overflow: hidden;
+          }
+          .iframe-container {
+            overflow: hidden;
+            position: relative;
+            width: 100vw;
+            height: 85vh;
+          }
+          .iframe-container iframe {
+            border: 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            overflow: hidden; /* added */
+          }
         }
         h1 {
           font-size: 2.5rem;
