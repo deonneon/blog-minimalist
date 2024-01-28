@@ -12,11 +12,7 @@ export default function Index() {
       <TwitterCardMeta url={"/"} />
       <div className="container">
         <div>
-          <h1>
-            Welcome in! I'm Deon<span className="fancy">.</span>
-          </h1>
-          <span className="handle">@nifti</span>
-          <h2>A haven for my entropic ideas.</h2>
+          <h2>A haven for entropic ideas.</h2>
           <SocialList />
         </div>
       </div>
@@ -37,15 +33,6 @@ export default function Index() {
           font-size: 1.75rem;
           font-weight: 400;
           line-height: 1.25;
-        }
-        .fancy {
-          color: #15847d;
-        }
-        .handle {
-          display: inline-block;
-          margin-top: 0.275em;
-          color: #9b9b9b;
-          letter-spacing: 0.05em;
         }
 
         @media (min-width: 769px) {

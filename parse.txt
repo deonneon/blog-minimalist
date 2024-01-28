@@ -995,14 +995,14 @@ import config from "../lib/config";
 export function SocialList({}) {
   return (
     <div>
-      <a
+      {/* <a
         title="Twitter"
         href={`https://twitter.com/${config.twitter_account}`}
         target="_blank"
         rel="noopener"
       >
         <Twitter width={24} height={24} fill={"#222"} />
-      </a>
+      </a> */}
       <a
         title="GitHub"
         href={`https://github.com/${config.github_account}`}
@@ -1039,11 +1039,7 @@ export default function Index() {
       <TwitterCardMeta url={"/"} />
       <div className="container">
         <div>
-          <h1>
-            Welcome in! I'm Deon<span className="fancy">.</span>
-          </h1>
-          <span className="handle">@nifti</span>
-          <h2>A haven for my entropic ideas.</h2>
+          <h2>A haven for entropic ideas.</h2>
           <SocialList />
         </div>
       </div>
@@ -1064,15 +1060,6 @@ export default function Index() {
           font-size: 1.75rem;
           font-weight: 400;
           line-height: 1.25;
-        }
-        .fancy {
-          color: #15847d;
-        }
-        .handle {
-          display: inline-block;
-          margin-top: 0.275em;
-          color: #9b9b9b;
-          letter-spacing: 0.05em;
         }
 
         @media (min-width: 769px) {
@@ -1396,7 +1383,6 @@ export default function Index({ posts, tags, pagination }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      {/* <PostList posts={posts} tags={tags} pagination={pagination} /> */}
       <div className="iframe-container">
         <iframe
           src="https://dynamic-cv-web.vercel.app/projects"
@@ -1416,8 +1402,9 @@ export default function Index({ posts, tags, pagination }: Props) {
         .iframe-container {
           overflow: hidden;
           position: relative;
-          width: 100vw;
-          height: 100vh;
+          margin: 0 2rem;
+          width: 85vw;
+          height: 90vh;
         }
         .iframe-container iframe {
           border: 0;
@@ -1473,235 +1460,6 @@ export const getStaticProps: GetStaticProps = async () => {
       tags,
       pagination,
     },
-  };
-};
-
-
-File: ./src/pages/projects/page/[page].tsx
-import { GetStaticPaths, GetStaticProps } from "next";
-import Head from "next/head";
-import Layout from "../../../components/Layout";
-import BasicMeta from "../../../components/meta/BasicMeta";
-import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
-import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
-import PostList from "../../../components/PostList";
-import config from "../../../lib/config";
-import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
-import { listTags, TagContent } from "../../../lib/tags";
-
-type Props = {
-  posts: PostContent[];
-  tags: TagContent[];
-  page: number;
-  pagination: {
-    current: number;
-    pages: number;
-  };
-};
-export default function Page({ posts, tags, pagination, page }: Props) {
-  const url = `/posts/page/${page}`;
-  const title = "All posts";
-  return (
-    <Layout>
-      <BasicMeta url={url} title={title} />
-      <OpenGraphMeta url={url} title={title} />
-      <TwitterCardMeta url={url} title={title} />
-      <PostList posts={posts} tags={tags} pagination={pagination} />
-    </Layout>
-  );
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const page = parseInt(params.page as string);
-  const posts = listPostContent(page, config.posts_per_page);
-  const tags = listTags();
-  const pagination = {
-    current: page,
-    pages: Math.ceil(countPosts() / config.posts_per_page),
-  };
-  return {
-    props: {
-      page,
-      posts,
-      tags,
-      pagination,
-    },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const pages = Math.ceil(countPosts() / config.posts_per_page);
-  const paths = Array.from(Array(pages - 1).keys()).map((it) => ({
-    params: { page: (it + 2).toString() },
-  }));
-  return {
-    paths: paths,
-    fallback: false,
-  };
-};
-
-
-File: ./src/pages/projects/[post].tsx
-import { GetStaticProps, GetStaticPaths } from "next";
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemote } from "next-mdx-remote";
-import matter from "gray-matter";
-import { fetchPostContent } from "../../lib/posts";
-import fs from "fs";
-import yaml from "js-yaml";
-import { parseISO } from "date-fns";
-import PostLayout from "../../components/PostLayout";
-
-import YouTube from "react-youtube";
-
-export type Props = {
-  title: string;
-  dateString: string;
-  slug: string;
-  tags: string[];
-  author: string;
-  description?: string;
-  source: any;
-};
-
-const components = { YouTube };
-const slugToPostContent = ((postContents) => {
-  let hash = {};
-  postContents.forEach((it) => (hash[it.slug] = it));
-  return hash;
-})(fetchPostContent());
-
-export default function Post({
-  title,
-  dateString,
-  slug,
-  tags,
-  author,
-  description = "",
-  source,
-}: Props) {
-  return (
-    <PostLayout
-      title={title}
-      date={parseISO(dateString)}
-      slug={slug}
-      tags={tags}
-      author={author}
-      description={description}
-    >
-      <MDXRemote {...source} components={components} />
-    </PostLayout>
-  );
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = fetchPostContent().map((it) => "/posts/" + it.slug);
-  return {
-    paths,
-    fallback: false,
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params.post as string;
-  const source = fs.readFileSync(slugToPostContent[slug].fullPath, "utf8");
-  const { content, data } = matter(source, {
-    engines: {
-      yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
-    },
-  });
-  const mdxSource = await serialize(content, { scope: data });
-  return {
-    props: {
-      title: data.title,
-      dateString: data.date,
-      slug: data.slug,
-      description: "",
-      tags: data.tags,
-      author: data.author,
-      source: mdxSource,
-    },
-  };
-};
-
-
-File: ./src/pages/projects/tags/[[...slug]].tsx
-import { GetStaticPaths, GetStaticProps } from "next";
-import Layout from "../../../components/Layout";
-import BasicMeta from "../../../components/meta/BasicMeta";
-import OpenGraphMeta from "../../../components/meta/OpenGraphMeta";
-import TwitterCardMeta from "../../../components/meta/TwitterCardMeta";
-import TagPostList from "../../../components/TagPostList";
-import config from "../../../lib/config";
-import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
-import { getTag, listTags, TagContent } from "../../../lib/tags";
-import Head from "next/head";
-
-type Props = {
-  posts: PostContent[];
-  tag: TagContent;
-  page?: string;
-  pagination: {
-    current: number;
-    pages: number;
-  };
-};
-export default function Index({ posts, tag, pagination, page }: Props) {
-  const url = `/posts/tags/${tag.name}` + (page ? `/${page}` : "");
-  const title = tag.name;
-  return (
-    <Layout>
-      <BasicMeta url={url} title={title} />
-      <OpenGraphMeta url={url} title={title} />
-      <TwitterCardMeta url={url} title={title} />
-      <TagPostList posts={posts} tag={tag} pagination={pagination} />
-    </Layout>
-  );
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const queries = params.slug as string[];
-  const [slug, page] = [queries[0], queries[1]];
-  const posts = listPostContent(
-    page ? parseInt(page as string) : 1,
-    config.posts_per_page,
-    slug
-  );
-  const tag = getTag(slug);
-  const pagination = {
-    current: page ? parseInt(page as string) : 1,
-    pages: Math.ceil(countPosts(slug) / config.posts_per_page),
-  };
-  const props: {
-    posts: PostContent[];
-    tag: TagContent;
-    pagination: { current: number; pages: number };
-    page?: string;
-  } = { posts, tag, pagination };
-  if (page) {
-    props.page = page;
-  }
-  return {
-    props,
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = listTags().flatMap((tag) => {
-    const pages = Math.ceil(countPosts(tag.slug) / config.posts_per_page);
-    return Array.from(Array(pages).keys()).map((page) =>
-      page === 0
-        ? {
-            params: { slug: [tag.slug] },
-          }
-        : {
-            params: { slug: [tag.slug, (page + 1).toString()] },
-          }
-    );
-  });
-  return {
-    paths: paths,
-    fallback: false,
   };
 };
 

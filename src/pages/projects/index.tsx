@@ -44,8 +44,9 @@ export default function Index({ posts, tags, pagination }: Props) {
         .iframe-container {
           overflow: hidden;
           position: relative;
-          width: 100vw;
-          height: 100vh;
+          margin: 0 2rem;
+          width: 85vw;
+          height: 90vh;
         }
         .iframe-container iframe {
           border: 0;
