@@ -23,6 +23,11 @@ export default function PostItem({ post }: Props) {
               font-weight: 500;
               font-size: 1.1em;
             }
+            @media (max-width: 769px) {
+              h2 {
+                font-size: 1em;
+              }
+            }
           `}
         </style>
       </span>
