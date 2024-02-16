@@ -33,8 +33,8 @@ export default function Index() {
         .iframe-container {
           overflow: hidden;
           position: relative;
-          width: 100vw;
-          height: 100vh;
+          width: 85vw;
+          height: 98vh;
         }
         .iframe-container iframe {
           border: 0;
