@@ -10,10 +10,16 @@ export default function PostItem({ post }: Props) {
   return (
     <Link href={"/posts/" + post.slug}>
       <span>
-        <Date date={parseISO(post.date)} />
+        <div className={"dateText"}>
+          <Date date={parseISO(post.date)} />
+        </div>
+
         <h2>{post.title}</h2>
         <style jsx>
           {`
+            .dateText {
+              font-family: courier, Arial;
+            }
             a {
               color: #222;
               display: inline-block;
@@ -22,11 +28,6 @@ export default function PostItem({ post }: Props) {
               margin: 0;
               font-weight: 500;
               font-size: 1.1em;
-            }
-            @media (max-width: 769px) {
-              h2 {
-                font-size: 1em;
-              }
             }
           `}
         </style>

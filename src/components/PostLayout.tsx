@@ -64,12 +64,12 @@ export default function PostLayout({
           <header>
             <h1>{title}</h1>
             <div className={"metadata"}>
-              <div>
+              <div className={"dateText"}>
                 <Date date={date} />
               </div>
-              <div>
+              {/* <div className={"dateText"}>
                 <Author author={getAuthor(author)} />
-              </div>
+              </div> */}
             </div>
           </header>
           <div className={styles.content}>{children}</div>
@@ -91,6 +91,9 @@ export default function PostLayout({
       <div className={"rightColumn"}></div>
       <style jsx>
         {`
+          .dateText {
+            font-family: courier, Arial;
+          }
           .rightColumn {
             width: 7rem;
           }
@@ -135,7 +138,7 @@ export default function PostLayout({
               flex-direction: column;
               width: 800px;
               max-width: 800px;
-              padding-top: 5%;
+              padding-top: 3%;
             }
             .container header {
               margin-bottom: 10%;
@@ -144,6 +147,9 @@ export default function PostLayout({
           @media (max-width: 769px) {
             .rightColumn {
               display: none;
+            }
+            h1 {
+              font-size: 1.5rem;
             }
           }
         `}
