@@ -85,7 +85,7 @@ export default function PostLayout({
           <div className={"social-list"}>
             <SocialList />
           </div>
-          <Copyright />
+          {/* <Copyright /> */}
         </footer>
       </div>
       <div className={"rightColumn"}></div>
@@ -130,6 +130,7 @@ export default function PostLayout({
           .social-list {
             margin-top: 3rem;
             text-align: center;
+            margin-bottom: 30px;
           }
 
           @media (min-width: 769px) {
