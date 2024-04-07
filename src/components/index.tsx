@@ -26,31 +26,29 @@ export default function Index({ posts, tags, pagination }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      <div className="container">
-        <div className="iframe-container">
-          <iframe
-            src="https://dynamic-cv-web.vercel.app/projects"
-            title="Resume"
-            allowFullScreen
-          ></iframe>
-        </div>
-
-        <MailingList />
+      <div className="iframe-container">
+        <iframe
+          src="https://dynamic-cv-web.vercel.app/projects"
+          title="Resume"
+          allowFullScreen
+        ></iframe>
       </div>
+      <MailingList />
       <style jsx>{`
         .container {
           display: flex;
           flex-direction: column;
-          // align-items: center;
+          align-items: center;
           justify-content: center;
           flex: 1 1 auto;
+          padding: 0 1.5rem;
         }
         .iframe-container {
           overflow: hidden;
           position: relative;
           margin: 0 2rem;
           width: 85vw;
-          min-height: 60vh;
+          height: 90vh;
         }
         .iframe-container iframe {
           border: 0;

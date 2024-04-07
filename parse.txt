@@ -389,7 +389,7 @@ export default function PostLayout({
   description = "",
   children,
 }: Props) {
-  const keywords = tags.map(it => getTag(it).name);
+  const keywords = tags.map((it) => getTag(it).name);
   const authorName = getAuthor(author).name;
   return (
     <Layout>
@@ -422,12 +422,12 @@ export default function PostLayout({
           <header>
             <h1>{title}</h1>
             <div className={"metadata"}>
-              <div>
+              <div className={"dateText"}>
                 <Date date={date} />
               </div>
-              <div>
+              {/* <div className={"dateText"}>
                 <Author author={getAuthor(author)} />
-              </div>
+              </div> */}
             </div>
           </header>
           <div className={styles.content}>{children}</div>
@@ -443,153 +443,175 @@ export default function PostLayout({
           <div className={"social-list"}>
             <SocialList />
           </div>
-          <Copyright />
+          {/* <Copyright /> */}
         </footer>
       </div>
+      <div className={"rightColumn"}></div>
       <style jsx>
         {`
+          .dateText {
+            font-family: courier, Arial;
+          }
+          .rightColumn {
+            width: 7rem;
+          }
+          .container {
+            display: block;
+            max-width: 36rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+            z-index: 0;
+          }
+          .metadata div {
+            display: inline-block;
+            margin-right: 0.5rem;
+          }
+          article {
+            flex: 1 0 auto;
+          }
+          h1 {
+            margin: 0 0 0.5rem;
+            font-size: 2rem;
+          }
+          .tag-list {
+            list-style: none;
+            text-align: right;
+            margin: 1.75rem 0 0 0;
+            padding: 0;
+          }
+          .tag-list li {
+            display: inline-block;
+            margin-left: 0.5rem;
+          }
+          .social-list {
+            margin-top: 3rem;
+            text-align: center;
+            margin-bottom: 30px;
+          }
+
+          @media (min-width: 769px) {
             .container {
-              display: block;
-              max-width: 36rem;
-              width: 100%;
-              margin: 0 auto;
-              padding: 0 1.5rem;
-              box-sizing: border-box;
-              z-index: 0;
+              display: flex;
+              flex-direction: column;
+              width: 800px;
+              max-width: 800px;
+              padding-top: 3%;
             }
-            .metadata div {
-              display: inline-block;
-              margin-right: 0.5rem;
+            .container header {
+              margin-bottom: 10%;
             }
-            article {
-              flex: 1 0 auto;
+          }
+          @media (max-width: 769px) {
+            .rightColumn {
+              display: none;
             }
             h1 {
-              margin: 0 0 0.5rem;
-              font-size: 2.25rem;
+              font-size: 1.5rem;
             }
-            .tag-list {
-              list-style: none;
-              text-align: right;
-              margin: 1.75rem 0 0 0;
-              padding: 0;
-            }
-            .tag-list li {
-              display: inline-block;
-              margin-left: 0.5rem;
-            }
-            .social-list {
-              margin-top: 3rem;
-              text-align: center;
-            }
-
-            @media (min-width: 769px) {
-              .container {
-                display: flex;
-                flex-direction: column;
-              }
-            }
-          `}
+          }
+        `}
       </style>
       <style global jsx>
         {`
-            /* Syntax highlighting */
-            .token.comment,
-            .token.prolog,
-            .token.doctype,
-            .token.cdata,
-            .token.plain-text {
-              color: #6a737d;
-            }
+          /* Syntax highlighting */
+          .token.comment,
+          .token.prolog,
+          .token.doctype,
+          .token.cdata,
+          .token.plain-text {
+            color: #6a737d;
+          }
 
-            .token.atrule,
-            .token.attr-value,
-            .token.keyword,
-            .token.operator {
-              color: #d73a49;
-            }
+          .token.atrule,
+          .token.attr-value,
+          .token.keyword,
+          .token.operator {
+            color: #d73a49;
+          }
 
-            .token.property,
-            .token.tag,
-            .token.boolean,
-            .token.number,
-            .token.constant,
-            .token.symbol,
-            .token.deleted {
-              color: #22863a;
-            }
+          .token.property,
+          .token.tag,
+          .token.boolean,
+          .token.number,
+          .token.constant,
+          .token.symbol,
+          .token.deleted {
+            color: #22863a;
+          }
 
-            .token.selector,
-            .token.attr-name,
-            .token.string,
-            .token.char,
-            .token.builtin,
-            .token.inserted {
-              color: #032f62;
-            }
+          .token.selector,
+          .token.attr-name,
+          .token.string,
+          .token.char,
+          .token.builtin,
+          .token.inserted {
+            color: #032f62;
+          }
 
-            .token.function,
-            .token.class-name {
-              color: #6f42c1;
-            }
+          .token.function,
+          .token.class-name {
+            color: #6f42c1;
+          }
 
-            /* language-specific */
+          /* language-specific */
 
-            /* JSX */
-            .language-jsx .token.punctuation,
-            .language-jsx .token.tag .token.punctuation,
-            .language-jsx .token.tag .token.script,
-            .language-jsx .token.plain-text {
-              color: #24292e;
-            }
+          /* JSX */
+          .language-jsx .token.punctuation,
+          .language-jsx .token.tag .token.punctuation,
+          .language-jsx .token.tag .token.script,
+          .language-jsx .token.plain-text {
+            color: #24292e;
+          }
 
-            .language-jsx .token.tag .token.attr-name {
-              color: #6f42c1;
-            }
+          .language-jsx .token.tag .token.attr-name {
+            color: #6f42c1;
+          }
 
-            .language-jsx .token.tag .token.class-name {
-              color: #005cc5;
-            }
+          .language-jsx .token.tag .token.class-name {
+            color: #005cc5;
+          }
 
-            .language-jsx .token.tag .token.script-punctuation,
-            .language-jsx .token.attr-value .token.punctuation:first-child {
-              color: #d73a49;
-            }
+          .language-jsx .token.tag .token.script-punctuation,
+          .language-jsx .token.attr-value .token.punctuation:first-child {
+            color: #d73a49;
+          }
 
-            .language-jsx .token.attr-value {
-              color: #032f62;
-            }
+          .language-jsx .token.attr-value {
+            color: #032f62;
+          }
 
-            .language-jsx span[class="comment"] {
-              color: pink;
-            }
+          .language-jsx span[class="comment"] {
+            color: pink;
+          }
 
-            /* HTML */
-            .language-html .token.tag .token.punctuation {
-              color: #24292e;
-            }
+          /* HTML */
+          .language-html .token.tag .token.punctuation {
+            color: #24292e;
+          }
 
-            .language-html .token.tag .token.attr-name {
-              color: #6f42c1;
-            }
+          .language-html .token.tag .token.attr-name {
+            color: #6f42c1;
+          }
 
-            .language-html .token.tag .token.attr-value,
-            .language-html
-              .token.tag
-              .token.attr-value
-              .token.punctuation:not(:first-child) {
-              color: #032f62;
-            }
+          .language-html .token.tag .token.attr-value,
+          .language-html
+            .token.tag
+            .token.attr-value
+            .token.punctuation:not(:first-child) {
+            color: #032f62;
+          }
 
-            /* CSS */
-            .language-css .token.selector {
-              color: #6f42c1;
-            }
+          /* CSS */
+          .language-css .token.selector {
+            color: #6f42c1;
+          }
 
-            .language-css .token.property {
-              color: #005cc5;
-            }
-          `}
+          .language-css .token.property {
+            color: #005cc5;
+          }
+        `}
       </style>
     </Layout>
   );
@@ -658,10 +680,16 @@ export default function PostItem({ post }: Props) {
   return (
     <Link href={"/posts/" + post.slug}>
       <span>
-        <Date date={parseISO(post.date)} />
+        <div className={"dateText"}>
+          <Date date={parseISO(post.date)} />
+        </div>
+
         <h2>{post.title}</h2>
         <style jsx>
           {`
+            .dateText {
+              font-family: courier, Arial;
+            }
             a {
               color: #222;
               display: inline-block;
@@ -669,6 +697,7 @@ export default function PostItem({ post }: Props) {
             h2 {
               margin: 0;
               font-weight: 500;
+              font-size: 1.1em;
             }
           `}
         </style>
@@ -691,7 +720,8 @@ export default function Date({ date }: Props) {
       <style jsx>
         {`
           span {
-            color: #9b9b9b;
+            color: black;
+            font-weight: 200;
           }
         `}
       </style>
@@ -1486,7 +1516,6 @@ export default function Index() {
               allowFullScreen
             ></iframe>
           </div>
-          <SocialList />
         </div>
       </div>
       <style jsx>{`
@@ -1501,8 +1530,8 @@ export default function Index() {
         .iframe-container {
           overflow: hidden;
           position: relative;
-          width: 100vw;
-          height: 100vh;
+          width: 85vw;
+          height: 98vh;
         }
         .iframe-container iframe {
           border: 0;
@@ -1511,6 +1540,27 @@ export default function Index() {
           position: absolute;
           top: 0;
           width: 100%;
+        }
+        @media (max-width: 769px) {
+          .container {
+            padding: 0 0;
+            overflow: hidden;
+          }
+          .iframe-container {
+            overflow: hidden;
+            position: relative;
+            width: 100vw;
+            height: 85vh;
+          }
+          .iframe-container iframe {
+            border: 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            overflow: hidden; /* added */
+          }
         }
         h1 {
           font-size: 2.5rem;
