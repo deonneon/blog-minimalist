@@ -9,25 +9,52 @@ type Props = {
 export default function PostItem({ post }: Props) {
   return (
     <Link href={"/posts/" + post.slug}>
-      <span>
-        <div className={"dateText"}>
-          <Date date={parseISO(post.date)} />
+      <span className="post-item">
+        <img src="/blog_post.png" alt={post.title} className="thumbnail" />
+        <div className="post-content">
+          <div className="dateText">
+            <Date date={parseISO(post.date)} />
+          </div>
+          <div className="blog-title">{post.title}</div>
+          <p className="blog-excerpt">This is just a test</p>
         </div>
-
-        <h2>{post.title}</h2>
         <style jsx>
           {`
+            .post-item {
+              cursor: pointer;
+              display: flex;
+              flex-direction: column;
+              align-items: start;
+              width: 300px;
+              border-bottom: 1px solid #eee;
+            }
+            .thumbnail {
+              width: 100%;
+              object-fit: cover;
+              // border-radius: 8px;
+            }
+            .post-content {
+              margin-top: 0.5em;
+            }
             .dateText {
-              font-family: courier, Arial;
+              color: #999;
+              font-size: 0.8rem;
+              margin-bottom: 5px;
             }
-            a {
-              color: #222;
-              display: inline-block;
+            .blog-title {
+              color: #333;
+              font-size: 1rem;
+              font-weight: bold;
+              text-decoration: none;
+              margin-bottom: 40px;
             }
-            h2 {
-              margin: 0;
-              font-weight: 500;
-              font-size: 1.1em;
+            a:hover .blog-title {
+              color: #000;
+            }
+            .blog-excerpt {
+              color: #666;
+              font-size: 0.7rem;
+              line-height: 1.5;
             }
           `}
         </style>
