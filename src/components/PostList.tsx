@@ -15,7 +15,7 @@ type Props = {
 };
 export default function PostList({ posts, tags, pagination }: Props) {
   return (
-    <div className={"container"}>
+    <div className={"post-container"}>
       <div className={"posts"}>
         <div className={"post-scroll-container"}>
           {posts.map((it, i) => (
@@ -24,28 +24,33 @@ export default function PostList({ posts, tags, pagination }: Props) {
             </div>
           ))}
         </div>
-        {/* <Pagination
+      </div>
+      <div className={"footer"}>
+        <Pagination
           current={pagination.current}
           pages={pagination.pages}
           link={{
             href: (page) => (page === 1 ? "/posts" : "/posts/page/[page]"),
             as: (page) => (page === 1 ? null : "/posts/page/" + page),
           }}
-        /> */}
+        />
+        <ul className={"categories"}>
+          {tags.map((it, i) => (
+            <li key={i}>
+              <TagLink tag={it} />
+            </li>
+          ))}
+        </ul>
       </div>
-      {/* <ul className={"categories"}>
-        {tags.map((it, i) => (
-          <li key={i}>
-            <TagLink tag={it} />
-          </li>
-        ))}
-      </ul> */}
       <style jsx>{`
-        .container {
-          max-width: 1200px;
+        .post-container {
+          max-width: 100vw;
           margin: 0 auto;
           padding: 1.5rem;
           overflow: hidden;
+          bottom: 40px;
+          min-width: 100vw;
+          z-index: 1;
         }
         ul {
           margin: 0;
@@ -81,13 +86,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
           display: none;
         }
         .categories li {
-          margin-bottom: 0.75em;
+          margin-right: 1.5rem;
+          margin-top: 2rem;
         }
-
         @media (min-width: 769px) {
           .categories {
             display: block;
+            display: flex;
+            flex-direction: row;
+            margin-right: 1.5rem;
           }
+        }
+        .footer {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          items-align: center;
         }
       `}</style>
     </div>

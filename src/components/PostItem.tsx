@@ -10,13 +10,15 @@ export default function PostItem({ post }: Props) {
   return (
     <Link href={"/posts/" + post.slug}>
       <span className="post-item">
-        <img src="/blog_post.png" alt={post.title} className="thumbnail" />
+        <img src={post.image} alt={post.title} className="thumbnail" />
         <div className="post-content">
-          <div className="dateText">
+          <div className="blog-date">
             <Date date={parseISO(post.date)} />
           </div>
           <div className="blog-title">{post.title}</div>
-          <p className="blog-excerpt">This is just a test</p>
+          <p className="blog-excerpt">
+            A reflective look of the projects and works from the past 12 months.
+          </p>
         </div>
         <style jsx>
           {`
@@ -26,6 +28,7 @@ export default function PostItem({ post }: Props) {
               flex-direction: column;
               align-items: start;
               width: 300px;
+              min-height: 400px;
               border-bottom: 1px solid #eee;
             }
             .thumbnail {
@@ -36,15 +39,15 @@ export default function PostItem({ post }: Props) {
             .post-content {
               margin-top: 0.5em;
             }
-            .dateText {
-              color: #999;
+            .blog-date {
+              color: #a5a5a5;
               font-size: 0.8rem;
               margin-bottom: 5px;
             }
             .blog-title {
               color: #333;
-              font-size: 1rem;
-              font-weight: bold;
+              font-size: 1.2rem;
+              font-weight: 400;
               text-decoration: none;
               margin-bottom: 40px;
             }
@@ -52,7 +55,7 @@ export default function PostItem({ post }: Props) {
               color: #000;
             }
             .blog-excerpt {
-              color: #666;
+              color: #a5a5a5;
               font-size: 0.7rem;
               line-height: 1.5;
             }
