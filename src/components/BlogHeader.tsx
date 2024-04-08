@@ -29,12 +29,12 @@ const BlogHeader = () => {
           }
 
           .title {
-            font-size: 48px;
+            font-size: 40px;
             margin-bottom: 10px;
           }
 
           .description {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 100;
           }
           @media (max-width: 769px) {
@@ -47,7 +47,7 @@ const BlogHeader = () => {
               margin-bottom: 20px;
             }
             .description {
-              font-size: 1.2rem;
+              font-size: 1.1rem;
               font-weight: 100;
             }
           }
