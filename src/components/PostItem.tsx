@@ -68,7 +68,7 @@ export default function PostItem({ post }: Props) {
               }
               .blog-title {
                 font-size: 1rem;
-                margin-bottom: 10px;
+                margin-bottom: 5px;
               }
             }
           `}

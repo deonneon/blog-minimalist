@@ -34,7 +34,7 @@ const BlogHeader = () => {
           }
 
           .description {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 100;
           }
           @media (max-width: 769px) {
