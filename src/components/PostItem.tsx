@@ -48,7 +48,7 @@ export default function PostItem({ post }: Props) {
               font-size: 1.2rem;
               font-weight: 400;
               text-decoration: none;
-              margin-bottom: 40px;
+              margin-bottom: 20px;
             }
             a:hover .blog-title {
               color: #000;

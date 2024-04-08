@@ -19,6 +19,7 @@ const BlogHeader = () => {
             padding: 40px 20px;
             min-width: 100vw;
             box-sizing: border-box;
+            padding-bottom: 20px;
           }
           h1 {
             font-weight: 300;
@@ -39,6 +40,15 @@ const BlogHeader = () => {
           @media (max-width: 769px) {
             .header {
               padding: 30px 20px;
+              padding-bottom: 10px;
+            }
+            .title {
+              font-size: 36px;
+              margin-bottom: 20px;
+            }
+            .description {
+              font-size: 1.2rem;
+              font-weight: 100;
             }
           }
         `}
