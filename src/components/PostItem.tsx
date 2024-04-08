@@ -34,7 +34,6 @@ export default function PostItem({ post }: Props) {
             .thumbnail {
               width: 100%;
               object-fit: cover;
-              // border-radius: 8px;
             }
             .post-content {
               margin-top: 0.5em;
@@ -58,6 +57,11 @@ export default function PostItem({ post }: Props) {
               color: #a5a5a5;
               font-size: 0.7rem;
               line-height: 1.5;
+            }
+            @media (max-width: 769px) {
+              .thumbnail {
+                aspect-ratio: 1 / 1;
+              }
             }
           `}
         </style>
