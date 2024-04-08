@@ -67,11 +67,12 @@ export default function Navigation() {
               padding: 0;
               position: fixed;
               top: 0;
+              left: 0; // Add this line
               background-color: #fff;
               display: flex;
               flex-direction: column;
               justify-content: center;
-              z-index: 1;
+              z-index: 9999; // Increase the z-index to make it the highest component
               transform: translateY(100%);
               transition: opacity 200ms;
             }
@@ -100,6 +101,7 @@ export default function Navigation() {
                 opacity: 1;
                 width: 7rem;
                 top: auto;
+                left: auto; // Reset the left position for desktop
                 display: block;
                 transform: translateY(0);
               }

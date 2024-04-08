@@ -1,3 +1,175 @@
+File: ./src/components/index.tsx
+import { GetStaticProps } from "next";
+import Layout from "./Layout";
+import BasicMeta from "./meta/BasicMeta";
+import OpenGraphMeta from "./meta/OpenGraphMeta";
+import TwitterCardMeta from "./meta/TwitterCardMeta";
+import config from "../lib/config";
+import { countPosts, listPostContent, PostContent } from "../lib/posts";
+import { listTags, TagContent } from "../lib/tags";
+import MailingList from "./MailingList";
+
+type Props = {
+  posts: PostContent[];
+  tags: TagContent[];
+  pagination: {
+    current: number;
+    pages: number;
+  };
+};
+export default function Index({ posts, tags, pagination }: Props) {
+  const url = "/posts";
+  const title = "All posts";
+  return (
+    <Layout>
+      <BasicMeta url={url} title={title} />
+      <OpenGraphMeta url={url} title={title} />
+      <TwitterCardMeta url={url} title={title} />
+      <div className="iframe-container">
+        <iframe
+          src="https://dynamic-cv-web.vercel.app/projects"
+          title="Resume"
+          allowFullScreen
+        ></iframe>
+      </div>
+      <MailingList />
+      <style jsx>{`
+        .container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          flex: 1 1 auto;
+          padding: 0 1.5rem;
+        }
+        .iframe-container {
+          overflow: hidden;
+          position: relative;
+          margin: 0 2rem;
+          width: 85vw;
+          height: 90vh;
+        }
+        .iframe-container iframe {
+          border: 0;
+          height: 100%;
+          left: 0;
+          position: absolute;
+          top: 0;
+          width: 100%;
+        }
+        h1 {
+          font-size: 2.5rem;
+          margin: 0;
+          font-weight: 500;
+        }
+        h2 {
+          font-size: 1.75rem;
+          font-weight: 400;
+          line-height: 1.25;
+        }
+        .fancy {
+          color: #15847d;
+        }
+        .handle {
+          display: inline-block;
+          margin-top: 0.275em;
+          color: #9b9b9b;
+          letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 769px) {
+          h1 {
+            font-size: 3rem;
+          }
+          h2 {
+            font-size: 2.25rem;
+          }
+        }
+      `}</style>
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const posts = listPostContent(1, config.posts_per_page);
+  const tags = listTags();
+  const pagination = {
+    current: 1,
+    pages: Math.ceil(countPosts() / config.posts_per_page),
+  };
+  return {
+    props: {
+      posts,
+      tags,
+      pagination,
+    },
+  };
+};
+
+
+File: ./src/components/BlogHeader.tsx
+const BlogHeader = () => {
+  return (
+    <div className={"header"}>
+      <div className={"title-section"}>
+        <h1 className={"title"}>DATA LAKE</h1>
+        <p className={"description"}>
+          A vast and ever-expanding repository of knowledge and insight. Topics
+          may be random but insightful. Join me on this journey through the
+          ever-changing landscape of technology.
+        </p>
+      </div>
+      <style jsx>
+        {`
+          .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 30px 20px;
+            min-width: 100vw;
+            box-sizing: border-box;
+            padding-bottom: 15px;
+          }
+          h1 {
+            font-weight: 300;
+          }
+          .title-section {
+            max-width: 800px;
+          }
+
+          .title {
+            font-size: 40px;
+            margin-bottom: 10px;
+          }
+
+          .description {
+            font-size: 1.3rem;
+            font-weight: 100;
+          }
+          @media (max-width: 769px) {
+            .header {
+              padding: 30px 20px;
+              padding-bottom: 0;
+            }
+            .title {
+              font-size: 36px;
+              margin-bottom: 20px;
+            }
+            .description {
+              font-size: 1.1rem;
+              font-weight: 100;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+};
+
+export default BlogHeader;
+
+
 File: ./src/components/Pagination.tsx
 import { generatePagination } from "../lib/pagination";
 import Link from "next/link";
@@ -30,7 +202,7 @@ export default function Pagination({ current, pages, link }: Props) {
       <style jsx>{`
         ul {
           list-style: none;
-          margin: 3rem 0 0 0;
+          margin: 1rem 0 0 0;
           padding: 0;
         }
         li {
@@ -42,6 +214,11 @@ export default function Pagination({ current, pages, link }: Props) {
         a.active {
           color: #222;
           font-weight: bold;
+        }
+        @media (max-width: 769px) {
+          ul {
+            margin: 0.3rem 0 0 0;
+          }
         }
       `}</style>
     </ul>
@@ -286,15 +463,17 @@ type Props = {
 };
 export default function PostList({ posts, tags, pagination }: Props) {
   return (
-    <div className={"container"}>
+    <div className={"post-container"}>
       <div className={"posts"}>
-        <ul className={"post-list"}>
+        <div className={"post-scroll-container"}>
           {posts.map((it, i) => (
-            <li key={i}>
+            <div key={i} className={"post-wrapper"}>
               <PostItem post={it} />
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+      </div>
+      <div className={"footer"}>
         <Pagination
           current={pagination.current}
           pages={pagination.pages}
@@ -303,21 +482,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
             as: (page) => (page === 1 ? null : "/posts/page/" + page),
           }}
         />
+        <ul className={"categories"}>
+          {tags.map((it, i) => (
+            <li key={i}>
+              <TagLink tag={it} />
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className={"categories"}>
-        {tags.map((it, i) => (
-          <li key={i}>
-            <TagLink tag={it} />
-          </li>
-        ))}
-      </ul>
       <style jsx>{`
-        .container {
-          display: flex;
+        .post-container {
+          max-width: 100vw;
           margin: 0 auto;
-          max-width: 1200px;
-          width: 100%;
-          padding: 0 1.5rem;
+          padding: 1.5rem;
+          overflow: hidden;
+          bottom: 40px;
+          min-width: 100vw;
+          z-index: 1;
         }
         ul {
           margin: 0;
@@ -328,11 +509,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
         }
         .posts {
           display: flex;
-          flex-direction: column;
-          flex: 1 1 auto;
+          align-items: flex-start;
+        }
+        .post-scroll-container {
+          display: flex;
+          overflow-x: auto;
+          -ms-overflow-style: none; /* for Internet Explorer, Edge */
+          scrollbar-width: none; /* for Firefox */
+        }
+        .post-scroll-container::-webkit-scrollbar {
+          display: none; /* for Chrome, Safari, and Opera */
+        }
+        .post-wrapper {
+          flex: none;
+          margin-right: 1.5rem;
         }
         .posts li {
-          margin-bottom: 1.5rem;
+          margin-bottom: 0;
         }
         .post-list {
           flex: 1 0 auto;
@@ -341,13 +534,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
           display: none;
         }
         .categories li {
-          margin-bottom: 0.75em;
+          margin-right: 1.5rem;
+          margin-top: 1rem;
         }
-
         @media (min-width: 769px) {
           .categories {
             display: block;
+            display: flex;
+            flex-direction: row;
+            margin-right: 1.5rem;
           }
+        }
+        .footer {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          items-align: center;
         }
       `}</style>
     </div>
@@ -474,6 +677,7 @@ export default function PostLayout({
           h1 {
             margin: 0 0 0.5rem;
             font-size: 2rem;
+            font-weight: 500;
           }
           .tag-list {
             list-style: none;
@@ -679,25 +883,67 @@ type Props = {
 export default function PostItem({ post }: Props) {
   return (
     <Link href={"/posts/" + post.slug}>
-      <span>
-        <div className={"dateText"}>
-          <Date date={parseISO(post.date)} />
+      <span className="post-item">
+        <img src={post.image} alt={post.title} className="thumbnail" />
+        <div className="post-content">
+          <div className="blog-date">
+            <Date date={parseISO(post.date)} />
+          </div>
+          <div className="blog-title">{post.title}</div>
+          <p className="blog-excerpt">
+            A reflective look of the projects and works from the past 12 months.
+          </p>
         </div>
-
-        <h2>{post.title}</h2>
         <style jsx>
           {`
-            .dateText {
-              font-family: courier, Arial;
+            .post-item {
+              cursor: pointer;
+              display: flex;
+              flex-direction: column;
+              align-items: start;
+              width: 300px;
+              min-height: 400px;
+              border-bottom: 1px solid #eee;
             }
-            a {
-              color: #222;
-              display: inline-block;
+            .thumbnail {
+              width: 100%;
+              object-fit: cover;
             }
-            h2 {
-              margin: 0;
-              font-weight: 500;
-              font-size: 1.1em;
+            .post-content {
+              margin-top: 0.5em;
+            }
+            .blog-date {
+              color: #a5a5a5;
+              font-size: 0.8rem;
+              margin-bottom: 5px;
+            }
+            .blog-title {
+              color: #333;
+              font-size: 1.2rem;
+              font-weight: 400;
+              text-decoration: none;
+              margin-bottom: 20px;
+            }
+            a:hover .blog-title {
+              color: #000;
+            }
+            .blog-excerpt {
+              color: #a5a5a5;
+              font-size: 0.7rem;
+              line-height: 1.5;
+            }
+            @media (max-width: 769px) {
+              .thumbnail {
+                aspect-ratio: 1 / 1;
+              }
+              .post-item {
+                width: 200px;
+                min-height: 250px;
+              }
+              .blog-title {
+                font-size: 1rem;
+                margin-bottom: 5px;
+              }
             }
           `}
         </style>
@@ -720,7 +966,7 @@ export default function Date({ date }: Props) {
       <style jsx>
         {`
           span {
-            color: black;
+            color: #a5a5a5;
             font-weight: 200;
           }
         `}
@@ -1016,6 +1262,225 @@ export default function TagPostList({ posts, tag, pagination }: Props) {
 }
 
 
+File: ./src/components/MailingList.tsx
+import React, { useState } from "react";
+
+export default function MailingList() {
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [subscription, setSubscription] = useState({
+    projects: false,
+    blog: false,
+  });
+  const [feedbackMessage, setFeedbackMessage] = useState(
+    "Consider keeping up with new projects. I won't spam."
+  );
+  const isSubscribed = subscription.projects || subscription.blog;
+
+  const validateEmail = (email) => {
+    const re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const handleSubscribe = (type) => {
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    setEmailError("");
+
+    console.log(`Subscribed to ${type} with email:`, email);
+    setSubscription({ ...subscription, [type]: true });
+
+    // Update feedback message upon successful subscription
+    setFeedbackMessage(
+      `You've successfully subscribed to ${
+        type === "projects" ? "project" : "blog"
+      } updates!`
+    );
+  };
+
+  const SubscriptionFeedback = () => {
+    let message = "";
+    if (subscription.projects && !subscription.blog) {
+      message =
+        "You are subscribed to project news. Want to subscribe to blog news as well?";
+    } else if (!subscription.projects && subscription.blog) {
+      message =
+        "You are subscribed to blog news. Want to subscribe to project news as well?";
+    } else if (subscription.projects && subscription.blog) {
+      message = "You are subscribed to both project and blog news.";
+    }
+    return message ? <p>{message}</p> : null;
+  };
+
+  return (
+    <div className="mailing-list-container">
+      <p>{feedbackMessage || <SubscriptionFeedback />}</p>
+      <form onSubmit={(e) => e.preventDefault()}>
+        {!isSubscribed && (
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
+            required
+          />
+        )}
+        <div className="button-container">
+          {!subscription.projects && (
+            <button type="button" onClick={() => handleSubscribe("projects")}>
+              Subscribe to Projects
+            </button>
+          )}
+          {!subscription.blog && (
+            <button type="button" onClick={() => handleSubscribe("blog")}>
+              Subscribe to Blog
+            </button>
+          )}
+        </div>
+      </form>
+      <div className="email-input-container">
+        {emailError && <p className="error">{emailError}</p>}
+      </div>
+      <style jsx>{`
+        .mailing-list-container {
+          text-align: center;
+          padding: 1rem;
+          border-radius: 8px;
+          margin: 0.5rem auto;
+          max-width: 500px;
+          min-height: 80px;
+        }
+        form {
+          margin-top: 0.5rem;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+        }
+        input,
+        button {
+          padding: 0.1rem;
+          margin: 0.2rem 0;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          width: 80%;
+          box-sizing: border-box;
+          height: 40px;
+        }
+        input {
+          padding-left: 0.5rem;
+          color: rgb(0, 0, 0, 0.6);
+        }
+        button {
+          background-color: rgba(0, 0, 0, 0.6);
+          color: #fff;
+          border: none;
+          cursor: pointer;
+          font-size: 0.8rem;
+          width: 140px;
+        }
+
+        button:hover {
+          background-color: rgba(0, 0, 0, 0.8);
+        }
+        .button-container {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          width: 100%;
+          margin-left: 0.5rem;
+        }
+        .button-container button:not(:last-child) {
+          margin-right: 0.5rem;
+        }
+        .email-input-container {
+          position: relative;
+          width: 80%;
+          max-width: 380px;
+          margin: auto;
+        }
+        .error {
+          position: absolute;
+          color: #ff0000;
+          width: 100%;
+          top: -10px;
+          left: 0;
+          text-align: center;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
+File: ./src/components/BlogPreview.tsx
+// File: ./src/components/BlogPreview.tsx
+import Link from "next/link";
+import { PostContent } from "../lib/posts";
+
+type Props = {
+  post: PostContent;
+};
+export default function BlogPreview({ post }: Props) {
+  return (
+    <div className="blog-preview">
+      <img src="/blog_post.png" alt={post.title} className="blog-image" />
+      <div className="blog-content">
+        <time className="blog-date">{post.date}</time>
+        <Link href={"/posts/" + post.slug} passHref>
+          <span className="blog-title">{post.title}</span>
+        </Link>
+        <p className="blog-excerpt">This is just a test</p>
+      </div>
+      <style jsx>{`
+        .blog-preview {
+          display: flex;
+          width: 100%;
+          gap: 20px;
+          margin-bottom: 40px;
+          align-items: center;
+          flex-direction: column;
+        }
+        .blog-image {
+          width: 100%;
+          //   border-radius: 8px;
+        }
+        .blog-content {
+          width: 100px;
+          display: flex;
+          flex-direction: column;
+        }
+        .blog-date {
+          color: #999;
+          font-size: 0.8rem;
+          margin-bottom: 5px;
+        }
+        .blog-title {
+          color: #333;
+          font-size: 1.5rem;
+          font-weight: bold;
+          text-decoration: none;
+          margin-bottom: 10px;
+        }
+        .blog-excerpt {
+          color: #666;
+          font-size: 1rem;
+          line-height: 1.5;
+        }
+        @media (max-width: 768px) {
+          .blog-preview {
+            flex-direction: column;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
 File: ./src/components/SocialList.tsx
 import React from "react";
 import Twitter from "../assets/twitter-alt.svg";
@@ -1117,6 +1582,7 @@ import config from "../../lib/config";
 import { countPosts, listPostContent, PostContent } from "../../lib/posts";
 import { listTags, TagContent } from "../../lib/tags";
 import Head from "next/head";
+import BlogHeader from "../../components/BlogHeader";
 
 type Props = {
   posts: PostContent[];
@@ -1134,7 +1600,23 @@ export default function Index({ posts, tags, pagination }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      <PostList posts={posts} tags={tags} pagination={pagination} />
+      <div className="container">
+        <BlogHeader />
+        <PostList posts={posts} tags={tags} pagination={pagination} />
+      </div>
+      <style jsx>{`
+        .container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          position: absolute;
+          overflow: hidden;
+          max-width: 100vw;
+          left: 0;
+          max-height: 100vh;
+          top: 0;
+        }
+      `}</style>
     </Layout>
   );
 }
@@ -1167,6 +1649,7 @@ import PostList from "../../../components/PostList";
 import config from "../../../lib/config";
 import { countPosts, listPostContent, PostContent } from "../../../lib/posts";
 import { listTags, TagContent } from "../../../lib/tags";
+import BlogHeader from "../../../components/BlogHeader";
 
 type Props = {
   posts: PostContent[];
@@ -1185,7 +1668,23 @@ export default function Page({ posts, tags, pagination, page }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      <PostList posts={posts} tags={tags} pagination={pagination} />
+      <div className="container">
+        <BlogHeader />
+        <PostList posts={posts} tags={tags} pagination={pagination} />
+      </div>
+      <style jsx>{`
+        .container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          position: absolute;
+          overflow: hidden;
+          max-width: 100vw;
+          left: 0;
+          max-height: 100vh;
+          top: 0;
+        }
+      `}</style>
     </Layout>
   );
 }
@@ -1396,6 +1895,7 @@ import config from "../../lib/config";
 import { countPosts, listPostContent, PostContent } from "../../lib/posts";
 import { listTags, TagContent } from "../../lib/tags";
 import Head from "next/head";
+import MailingList from "../../components/MailingList";
 
 type Props = {
   posts: PostContent[];
@@ -1413,28 +1913,31 @@ export default function Index({ posts, tags, pagination }: Props) {
       <BasicMeta url={url} title={title} />
       <OpenGraphMeta url={url} title={title} />
       <TwitterCardMeta url={url} title={title} />
-      <div className="iframe-container">
-        <iframe
-          src="https://dynamic-cv-web.vercel.app/projects"
-          title="Resume"
-          allowFullScreen
-        ></iframe>
+      <div className="container">
+        <div className="iframe-container">
+          <iframe
+            src="https://dynamic-cv-web.vercel.app/projects"
+            title="Resume"
+            allowFullScreen
+          ></iframe>
+        </div>
+
+        <MailingList />
       </div>
       <style jsx>{`
         .container {
           display: flex;
           flex-direction: column;
-          align-items: center;
+          // align-items: center;
           justify-content: center;
           flex: 1 1 auto;
-          padding: 0 1.5rem;
         }
         .iframe-container {
           overflow: hidden;
           position: relative;
           margin: 0 2rem;
           width: 85vw;
-          height: 90vh;
+          min-height: 60vh;
         }
         .iframe-container iframe {
           border: 0;
