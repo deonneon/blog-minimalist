@@ -29,7 +29,7 @@ export default function Pagination({ current, pages, link }: Props) {
       <style jsx>{`
         ul {
           list-style: none;
-          margin: 2rem 0 0 0;
+          margin: 1rem 0 0 0;
           padding: 0;
         }
         li {

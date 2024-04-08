@@ -87,7 +87,7 @@ export default function PostList({ posts, tags, pagination }: Props) {
         }
         .categories li {
           margin-right: 1.5rem;
-          margin-top: 2rem;
+          margin-top: 1rem;
         }
         @media (min-width: 769px) {
           .categories {
