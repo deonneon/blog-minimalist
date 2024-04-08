@@ -62,6 +62,13 @@ export default function PostItem({ post }: Props) {
               .thumbnail {
                 aspect-ratio: 1 / 1;
               }
+              .post-item {
+                width: 200px;
+                min-height: 300px;
+              }
+              .blog-title {
+                font-size: 1rem;
+              }
             }
           `}
         </style>

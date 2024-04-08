@@ -42,6 +42,11 @@ export default function Pagination({ current, pages, link }: Props) {
           color: #222;
           font-weight: bold;
         }
+        @media (max-width: 769px) {
+          ul {
+            margin: 0.3rem 0 0 0;
+          }
+        }
       `}</style>
     </ul>
   );
