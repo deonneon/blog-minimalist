@@ -72,7 +72,7 @@ export default function Navigation() {
               display: flex;
               flex-direction: column;
               justify-content: center;
-              z-index: 9999; // Increase the z-index to make it the highest component
+              z-index: 1;
               transform: translateY(100%);
               transition: opacity 200ms;
             }
@@ -108,6 +108,11 @@ export default function Navigation() {
               li {
                 font-size: 1rem;
                 padding: 0;
+              }
+            }
+            @media (max-width: 769px) {
+              .active ul {
+                z-index: 9999;
               }
             }
           `}

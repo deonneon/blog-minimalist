@@ -63,12 +63,16 @@ export default function PostItem({ post }: Props) {
                 aspect-ratio: 1 / 1;
               }
               .post-item {
-                width: 200px;
-                min-height: 250px;
+                width: 230px;
+                min-height: 270px;
+                border-bottom: 0;
               }
               .blog-title {
                 font-size: 1rem;
                 margin-bottom: 5px;
+              }
+              .blog-excerpt {
+                display: none;
               }
             }
           `}
