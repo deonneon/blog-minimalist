@@ -16,7 +16,7 @@ const BlogHeader = () => {
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
             min-width: 100vw;
             box-sizing: border-box;
             padding-bottom: 15px;
@@ -30,7 +30,7 @@ const BlogHeader = () => {
 
           .title {
             font-size: 48px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
           }
 
           .description {
@@ -40,7 +40,7 @@ const BlogHeader = () => {
           @media (max-width: 769px) {
             .header {
               padding: 30px 20px;
-              padding-bottom: 10px;
+              padding-bottom: 0;
             }
             .title {
               font-size: 36px;

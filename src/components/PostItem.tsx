@@ -64,10 +64,11 @@ export default function PostItem({ post }: Props) {
               }
               .post-item {
                 width: 200px;
-                min-height: 300px;
+                min-height: 250px;
               }
               .blog-title {
                 font-size: 1rem;
+                margin-bottom: 10px;
               }
             }
           `}
