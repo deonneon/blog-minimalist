@@ -31,7 +31,7 @@ export default function Index({ posts, tags, pagination }: Props) {
           allowFullScreen
         ></iframe>
       </div>
-      <MailingList />
+      {/* <MailingList /> */}
       <style jsx>{`
         .container {
           display: flex;

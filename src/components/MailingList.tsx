@@ -149,11 +149,11 @@ export default function MailingList() {
             margin: 0;
           }
           .mailing-list-container p {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
           }
           button {
-            font-size: 0.7rem;
-            width: 100px;
+            font-size: 0.7em;
+            width: 90px;
           }
         }
       `}</style>
