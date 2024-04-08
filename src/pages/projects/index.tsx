@@ -30,7 +30,7 @@ export default function Index({ posts, tags, pagination }: Props) {
         <div className="iframe-container">
           <iframe
             src="https://dynamic-cv-web.vercel.app/projects"
-            title="Resume"
+            title="projects"
             allowFullScreen
           ></iframe>
         </div>
@@ -50,7 +50,7 @@ export default function Index({ posts, tags, pagination }: Props) {
           position: relative;
           margin: 0 2rem;
           width: 85vw;
-          min-height: 60vh;
+          min-height: 80vh;
         }
         .iframe-container iframe {
           border: 0;
