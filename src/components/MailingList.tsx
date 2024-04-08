@@ -117,7 +117,6 @@ export default function MailingList() {
           font-size: 0.8rem;
           width: 140px;
         }
-
         button:hover {
           background-color: rgba(0, 0, 0, 0.8);
         }
@@ -144,6 +143,18 @@ export default function MailingList() {
           top: -10px;
           left: 0;
           text-align: center;
+        }
+        @media (max-width: 769px) {
+          .mailing-list-container {
+            margin: 0;
+          }
+          .mailing-list-container p {
+            font-size: 0.8rem;
+          }
+          button {
+            font-size: 0.7rem;
+            width: 100px;
+          }
         }
       `}</style>
     </div>
