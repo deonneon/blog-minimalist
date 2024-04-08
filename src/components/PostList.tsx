@@ -15,15 +15,17 @@ type Props = {
 };
 export default function PostList({ posts, tags, pagination }: Props) {
   return (
-    <div className={"container"}>
+    <div className={"post-container"}>
       <div className={"posts"}>
-        <ul className={"post-list"}>
+        <div className={"post-scroll-container"}>
           {posts.map((it, i) => (
-            <li key={i}>
+            <div key={i} className={"post-wrapper"}>
               <PostItem post={it} />
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+      </div>
+      <div className={"footer"}>
         <Pagination
           current={pagination.current}
           pages={pagination.pages}
@@ -32,21 +34,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
             as: (page) => (page === 1 ? null : "/posts/page/" + page),
           }}
         />
+        <ul className={"categories"}>
+          {tags.map((it, i) => (
+            <li key={i}>
+              <TagLink tag={it} />
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className={"categories"}>
-        {tags.map((it, i) => (
-          <li key={i}>
-            <TagLink tag={it} />
-          </li>
-        ))}
-      </ul>
       <style jsx>{`
-        .container {
-          display: flex;
+        .post-container {
+          max-width: 100vw;
           margin: 0 auto;
-          max-width: 1200px;
-          width: 100%;
-          padding: 0 1.5rem;
+          padding: 1.5rem;
+          overflow: hidden;
+          bottom: 40px;
+          min-width: 100vw;
+          z-index: 1;
         }
         ul {
           margin: 0;
@@ -57,11 +61,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
         }
         .posts {
           display: flex;
-          flex-direction: column;
-          flex: 1 1 auto;
+          align-items: flex-start;
+        }
+        .post-scroll-container {
+          display: flex;
+          overflow-x: auto;
+          -ms-overflow-style: none; /* for Internet Explorer, Edge */
+          scrollbar-width: none; /* for Firefox */
+        }
+        .post-scroll-container::-webkit-scrollbar {
+          display: none; /* for Chrome, Safari, and Opera */
+        }
+        .post-wrapper {
+          flex: none;
+          margin-right: 1.5rem;
         }
         .posts li {
-          margin-bottom: 1.5rem;
+          margin-bottom: 0;
         }
         .post-list {
           flex: 1 0 auto;
@@ -70,13 +86,23 @@ export default function PostList({ posts, tags, pagination }: Props) {
           display: none;
         }
         .categories li {
-          margin-bottom: 0.75em;
+          margin-right: 1.5rem;
+          margin-top: 2rem;
         }
-
         @media (min-width: 769px) {
           .categories {
             display: block;
+            display: flex;
+            flex-direction: row;
+            margin-right: 1.5rem;
           }
+        }
+        .footer {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          items-align: center;
         }
       `}</style>
     </div>
