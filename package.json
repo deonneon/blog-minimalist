@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "deon-blog",
   "version": "0.1.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.6.0",
+    "@netlify/plugin-nextjs": "^4.41.3",
     "@svgr/webpack": "^8.1.0",
     "@types/js-yaml": "^4.0.0",
     "date-fns": "^2.19.0",
