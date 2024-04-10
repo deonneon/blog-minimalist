@@ -32,7 +32,7 @@ export default function Index({ posts, tags, pagination }: Props) {
           allowFullScreen
         ></iframe>
       </div>
-      <MailingList />
+      {/* <MailingList /> */}
       <style jsx>{`
         .container {
           display: flex;
@@ -937,12 +937,16 @@ export default function PostItem({ post }: Props) {
                 aspect-ratio: 1 / 1;
               }
               .post-item {
-                width: 200px;
-                min-height: 250px;
+                width: 230px;
+                min-height: 270px;
+                border-bottom: 0;
               }
               .blog-title {
                 font-size: 1rem;
                 margin-bottom: 5px;
+              }
+              .blog-excerpt {
+                display: none;
               }
             }
           `}
@@ -1131,6 +1135,7 @@ export default function Navigation() {
               padding: 0;
               position: fixed;
               top: 0;
+              left: 0; // Add this line
               background-color: #fff;
               display: flex;
               flex-direction: column;
@@ -1164,12 +1169,18 @@ export default function Navigation() {
                 opacity: 1;
                 width: 7rem;
                 top: auto;
+                left: auto; // Reset the left position for desktop
                 display: block;
                 transform: translateY(0);
               }
               li {
                 font-size: 1rem;
                 padding: 0;
+              }
+            }
+            @media (max-width: 769px) {
+              .active ul {
+                z-index: 9999;
               }
             }
           `}
@@ -1382,7 +1393,6 @@ export default function MailingList() {
           font-size: 0.8rem;
           width: 140px;
         }
-
         button:hover {
           background-color: rgba(0, 0, 0, 0.8);
         }
@@ -1409,6 +1419,18 @@ export default function MailingList() {
           top: -10px;
           left: 0;
           text-align: center;
+        }
+        @media (max-width: 769px) {
+          .mailing-list-container {
+            margin: 0;
+          }
+          .mailing-list-container p {
+            font-size: 0.85rem;
+          }
+          button {
+            font-size: 0.7em;
+            width: 90px;
+          }
         }
       `}</style>
     </div>
@@ -1895,7 +1917,7 @@ import config from "../../lib/config";
 import { countPosts, listPostContent, PostContent } from "../../lib/posts";
 import { listTags, TagContent } from "../../lib/tags";
 import Head from "next/head";
-import MailingList from "../../components/MailingList";
+// import MailingList from "../../components/MailingList";
 
 type Props = {
   posts: PostContent[];
@@ -1917,12 +1939,12 @@ export default function Index({ posts, tags, pagination }: Props) {
         <div className="iframe-container">
           <iframe
             src="https://dynamic-cv-web.vercel.app/projects"
-            title="Resume"
+            title="projects"
             allowFullScreen
           ></iframe>
         </div>
 
-        <MailingList />
+        {/* <MailingList /> */}
       </div>
       <style jsx>{`
         .container {
@@ -1937,7 +1959,7 @@ export default function Index({ posts, tags, pagination }: Props) {
           position: relative;
           margin: 0 2rem;
           width: 85vw;
-          min-height: 60vh;
+          min-height: 80vh;
         }
         .iframe-container iframe {
           border: 0;
