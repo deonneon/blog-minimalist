@@ -44,7 +44,7 @@ export default function MailingList() {
     setEmailError("");
 
     try {
-      const response = await fetch("http://localhost:4000/subscribe", {
+      const response = await fetch("/.netlify/functions/subscribe", {
         // Adjust this URL as necessary
         method: "POST",
         headers: {
