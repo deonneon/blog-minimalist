@@ -18,22 +18,52 @@ export default function MailingList() {
     return re.test(String(email).toLowerCase());
   };
 
-  const handleSubscribe = (type) => {
+  // const handleSubscribe = (type) => {
+  //   if (!validateEmail(email)) {
+  //     setEmailError("Please enter a valid email address.");
+  //     return;
+  //   }
+  //   setEmailError("");
+
+  //   console.log(`Subscribed to ${type} with email:`, email);
+  //   setSubscription({ ...subscription, [type]: true });
+
+  //   // Update feedback message upon successful subscription
+  //   setFeedbackMessage(
+  //     `You've successfully subscribed to ${
+  //       type === "projects" ? "project" : "blog"
+  //     } updates!`
+  //   );
+  // };
+
+  const handleSubscribe = async (type) => {
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email address.");
       return;
     }
     setEmailError("");
 
-    console.log(`Subscribed to ${type} with email:`, email);
-    setSubscription({ ...subscription, [type]: true });
-
-    // Update feedback message upon successful subscription
-    setFeedbackMessage(
-      `You've successfully subscribed to ${
-        type === "projects" ? "project" : "blog"
-      } updates!`
-    );
+    try {
+      const response = await fetch("http://localhost:4000/subscribe", {
+        // Adjust this URL as necessary
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, type }),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        console.log(`Subscribed to ${type} with email:`, email);
+        setSubscription({ ...subscription, [type]: true });
+        setFeedbackMessage(data.message);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Subscription error:", error);
+      setEmailError("Failed to subscribe. Please try again later.");
+    }
   };
 
   const SubscriptionFeedback = () => {

@@ -8,7 +8,7 @@ import config from "../../lib/config";
 import { countPosts, listPostContent, PostContent } from "../../lib/posts";
 import { listTags, TagContent } from "../../lib/tags";
 import Head from "next/head";
-// import MailingList from "../../components/MailingList";
+import MailingList from "../../components/MailingList";
 
 type Props = {
   posts: PostContent[];
@@ -35,7 +35,7 @@ export default function Index({ posts, tags, pagination }: Props) {
           ></iframe>
         </div>
 
-        {/* <MailingList /> */}
+        <MailingList />
       </div>
       <style jsx>{`
         .container {

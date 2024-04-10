@@ -1,4 +1,5 @@
-import nodemailer from "nodemailer";
+//for node express server
+const nodemailer = require("nodemailer");
 
 const smtpOptions = {
   host: process.env.EMAIL_SERVER_HOST,
@@ -10,7 +11,7 @@ const smtpOptions = {
   },
 };
 
-export const sendEmail = async (data) => {
+const sendEmail = async (data) => {
   const transporter = nodemailer.createTransport({
     ...smtpOptions,
   });
@@ -20,3 +21,5 @@ export const sendEmail = async (data) => {
     ...data,
   });
 };
+
+module.exports = { sendEmail };
