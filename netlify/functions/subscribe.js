@@ -1,4 +1,4 @@
-const { sendEmail } = require("./src/utils/email");
+const { sendEmail } = require("../../src/utils/email");
 
 exports.handler = async (event, context) => {
   if (event.httpMethod !== "POST") {
