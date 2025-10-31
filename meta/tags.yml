@@ -11,3 +11,19 @@ tags:
     name: mdx
   - slug: markdown
     name: markdown
+  - slug: ai
+    name: AI
+  - slug: technology
+    name: Technology
+  - slug: development
+    name: Development
+  - slug: protocols
+    name: Protocols
+  - slug: tools
+    name: Tools
+  - slug: productivity
+    name: Productivity
+  - slug: machine-learning
+    name: Machine Learning
+  - slug: philosophy
+    name: Philosophy
